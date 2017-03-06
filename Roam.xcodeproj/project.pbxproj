@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		79C55A619D6768BB869EE101 /* Pods_Roam.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0483571199241373B49CCFBA /* Pods_Roam.framework */; };
 		D7CA2AB51E690A44003B138C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2AB41E690A44003B138C /* main.m */; };
 		D7CA2AB81E690A44003B138C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2AB71E690A44003B138C /* AppDelegate.m */; };
-		D7CA2ABB1E690A44003B138C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2ABA1E690A44003B138C /* ViewController.m */; };
+		D7CA2ABB1E690A44003B138C /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2ABA1E690A44003B138C /* MainViewController.m */; };
 		D7CA2ABE1E690A44003B138C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D7CA2ABC1E690A44003B138C /* Main.storyboard */; };
 		D7CA2AC01E690A44003B138C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D7CA2ABF1E690A44003B138C /* Assets.xcassets */; };
 		D7CA2AC31E690A44003B138C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D7CA2AC11E690A44003B138C /* LaunchScreen.storyboard */; };
@@ -35,12 +36,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0483571199241373B49CCFBA /* Pods_Roam.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Roam.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		82686AAB57F448526042A93C /* Pods-Roam.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Roam.release.xcconfig"; path = "Pods/Target Support Files/Pods-Roam/Pods-Roam.release.xcconfig"; sourceTree = "<group>"; };
+		8E548D499CDE5C0D2559F5FD /* Pods-Roam.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Roam.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Roam/Pods-Roam.debug.xcconfig"; sourceTree = "<group>"; };
 		D7CA2AB01E690A44003B138C /* Roam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Roam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CA2AB41E690A44003B138C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D7CA2AB61E690A44003B138C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		D7CA2AB71E690A44003B138C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		D7CA2AB91E690A44003B138C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		D7CA2ABA1E690A44003B138C /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		D7CA2AB91E690A44003B138C /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
+		D7CA2ABA1E690A44003B138C /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		D7CA2ABD1E690A44003B138C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D7CA2ABF1E690A44003B138C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D7CA2AC21E690A44003B138C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -58,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79C55A619D6768BB869EE101 /* Pods_Roam.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0DEFEB306C0FD8907BF5E0F0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0483571199241373B49CCFBA /* Pods_Roam.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		13B0A95DF6DBE97556765949 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				8E548D499CDE5C0D2559F5FD /* Pods-Roam.debug.xcconfig */,
+				82686AAB57F448526042A93C /* Pods-Roam.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		D7CA2AA71E690A44003B138C = {
 			isa = PBXGroup;
 			children = (
@@ -85,6 +107,8 @@
 				D7CA2ACC1E690A44003B138C /* RoamTests */,
 				D7CA2AD71E690A44003B138C /* RoamUITests */,
 				D7CA2AB11E690A44003B138C /* Products */,
+				13B0A95DF6DBE97556765949 /* Pods */,
+				0DEFEB306C0FD8907BF5E0F0 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -103,8 +127,8 @@
 			children = (
 				D7CA2AB61E690A44003B138C /* AppDelegate.h */,
 				D7CA2AB71E690A44003B138C /* AppDelegate.m */,
-				D7CA2AB91E690A44003B138C /* ViewController.h */,
-				D7CA2ABA1E690A44003B138C /* ViewController.m */,
+				D7CA2AB91E690A44003B138C /* MainViewController.h */,
+				D7CA2ABA1E690A44003B138C /* MainViewController.m */,
 				D7CA2ABC1E690A44003B138C /* Main.storyboard */,
 				D7CA2ABF1E690A44003B138C /* Assets.xcassets */,
 				D7CA2AC11E690A44003B138C /* LaunchScreen.storyboard */,
@@ -147,9 +171,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D7CA2ADD1E690A44003B138C /* Build configuration list for PBXNativeTarget "Roam" */;
 			buildPhases = (
+				5EF240805B431E1FC0D79571 /* [CP] Check Pods Manifest.lock */,
 				D7CA2AAC1E690A44003B138C /* Sources */,
 				D7CA2AAD1E690A44003B138C /* Frameworks */,
 				D7CA2AAE1E690A44003B138C /* Resources */,
+				A36B4C82DE826FCBAAF132CC /* [CP] Embed Pods Frameworks */,
+				A13D25AD8E9C2B224624DDE1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -268,12 +295,60 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		5EF240805B431E1FC0D79571 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		A13D25AD8E9C2B224624DDE1 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Roam/Pods-Roam-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A36B4C82DE826FCBAAF132CC /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Roam/Pods-Roam-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		D7CA2AAC1E690A44003B138C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D7CA2ABB1E690A44003B138C /* ViewController.m in Sources */,
+				D7CA2ABB1E690A44003B138C /* MainViewController.m in Sources */,
 				D7CA2AB81E690A44003B138C /* AppDelegate.m in Sources */,
 				D7CA2AB51E690A44003B138C /* main.m in Sources */,
 			);
@@ -420,23 +495,29 @@
 		};
 		D7CA2ADE1E690A44003B138C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8E548D499CDE5C0D2559F5FD /* Pods-Roam.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = Roam/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.huangwenhong.Roam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		D7CA2ADF1E690A44003B138C /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 82686AAB57F448526042A93C /* Pods-Roam.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = Roam/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.huangwenhong.Roam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
