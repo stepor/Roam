@@ -586,6 +586,7 @@
 				D7CA2ADF1E690A44003B138C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D7CA2AE01E690A44003B138C /* Build configuration list for PBXNativeTarget "RoamTests" */ = {
 			isa = XCConfigurationList;
@@ -594,6 +595,7 @@
 				D7CA2AE21E690A44003B138C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D7CA2AE31E690A44003B138C /* Build configuration list for PBXNativeTarget "RoamUITests" */ = {
 			isa = XCConfigurationList;
@@ -602,6 +604,7 @@
 				D7CA2AE51E690A44003B138C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

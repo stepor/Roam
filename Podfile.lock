@@ -1,15 +1,18 @@
 PODS:
+  - BHBPopView (1.2.0)
   - KVOController (1.2.0)
   - Masonry (1.0.2)
 
 DEPENDENCIES:
+  - BHBPopView
   - KVOController (~> 1.2.0)
   - Masonry (~> 1.0.2)
 
 SPEC CHECKSUMS:
+  BHBPopView: ea1c5a614e6bbbbc64c873d52fb1b5b60378cef0
   KVOController: d72ace34afea42468329623b3379ab3cd1d286b6
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
 
-PODFILE CHECKSUM: 655d9122f8416c141ef2c7a30f9c7cd650a0c353
+PODFILE CHECKSUM: 0d9778d2eadb148e4bd39c6e34712c9c69a58c5d
 
 COCOAPODS: 1.2.0.beta.1

@@ -10,11 +10,11 @@
 #import <WebKit/WebKit.h>
 #import <Masonry/Masonry.h>
 #import <KVOController/KVOController.h>
+#import <BHBPopView/BHBPopView.h>
 
 @interface MainViewController ()<WKNavigationDelegate, WKUIDelegate, UITextFieldDelegate>
 
 @property (strong, nonatomic) WKWebView *webView;
-
 //header view
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet UITextField *searchTextField;
@@ -79,6 +79,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     
     //menu button
     [self.menuButton addTarget:self action:@selector(menuButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    self.menuButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
     
     //textField
     self.searchTextField.delegate = self;
@@ -220,8 +221,12 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (void)menuButtonAction:(UIButton *)button {
-    BOOL can = [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"www.baidu.com"]];
-    NSLog(@"can: %d", can);
+    
+    [BHBPopView showToView:self.view andImages:@[@"collect", @"collect"] andTitles:@[@"添加书签", @"书签"] andSelectBlock:^(BHBItem *item) {
+        
+    }];
+    
+    
 }
 
 
