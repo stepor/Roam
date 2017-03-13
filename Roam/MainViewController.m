@@ -171,7 +171,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     if(!show) {
         UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 0.0, CGRectGetHeight(self.menuView.bounds), 0.0);
         
-        popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"collect", @"collect", @"collect", @"collect"] titles:@[@"收藏", @"收藏", @"收藏" , @"收藏", @"收藏"] showBlock:^ {
+        popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"bookmark", @"collect", @"collect", @"collect"] titles:@[@"添加书签", @"书签/历史", @"收藏" , @"收藏", @"收藏"] showBlock:^ {
             show = YES;
         } hideBlock:^{
             show = NO;

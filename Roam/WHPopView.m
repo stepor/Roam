@@ -62,13 +62,10 @@ static NSString *const reuseID_itemCell = @"itemCell";
     view.collectionView.backgroundColor = [UIColor whiteColor];
     
     [view.collectionView registerNib:[UINib nibWithNibName:@"ItemCell" bundle:nil] forCellWithReuseIdentifier:reuseID_itemCell];
+
     
-    [UIView animateWithDuration:0.5 animations:^{
-        
-    }];
-    
-    [UIView animateWithDuration:0.5 animations:^{
-        view.collectionView.transform = CGAffineTransformMakeTranslation(0.0, -height);
+    [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+         view.collectionView.transform = CGAffineTransformMakeTranslation(0.0, -height);
     } completion:^(BOOL finished) {
         if(finished) {
             view.showBlock();
@@ -101,7 +98,7 @@ static NSString *const reuseID_itemCell = @"itemCell";
 }
 
 - (void)hide{
-    [UIView animateWithDuration:0.5 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+    [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         self.collectionView.transform = CGAffineTransformIdentity;
     } completion:^(BOOL finished) {
         if(finished) {
