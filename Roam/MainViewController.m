@@ -11,6 +11,7 @@
 #import <Masonry/Masonry.h>
 #import <KVOController/KVOController.h>
 #import <BHBPopView/BHBPopView.h>
+#import "WHPopView.h"
 
 @interface MainViewController ()<WKNavigationDelegate, WKUIDelegate, UITextFieldDelegate>
 
@@ -41,69 +42,13 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //webView
-    WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
-    self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
-    self.webView.allowsBackForwardNavigationGestures = YES;
-    self.webView.UIDelegate = self;
-    self.webView.navigationDelegate = self;
-    [self.view insertSubview:self.webView belowSubview:self.menuView];
-    
-    self.webView.scrollView.contentInset = UIEdgeInsetsMake(0.0, 0.0, 50.0, 0.0);
-    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
-
-    //resign button
-    self.resignButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.resignButton addTarget:self action:@selector(resignButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.resignButton setTitle:@"取消" forState:UIControlStateNormal];
-    [self.headerView addSubview:self.resignButton];
-    
-    //back and forward button
-    FBKVOController *kvoController = [FBKVOController controllerWithObserver:self];
-    self.KVOController = kvoController;
-    __weak typeof(self) weakSelf = self;
-    [self.KVOController observe:self.webView keyPath:@"canGoBack" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
-        typeof(weakSelf) strongSelf = weakSelf;
-        NSNumber *num = (NSNumber *)change[NSKeyValueChangeNewKey];
-        strongSelf.backButton.enabled = num.boolValue;
-    }];
-    [self.KVOController observe:self.webView keyPath:@"canGoForward" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
-        typeof(weakSelf) strongSelf = weakSelf;
-        NSNumber *num = (NSNumber *)change[NSKeyValueChangeNewKey];
-        strongSelf.forwardButton.enabled = num.boolValue;
-    }];
-    [self.backButton addTarget:self action:@selector(goBackButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.forwardButton addTarget:self action:@selector(goForwardButton:) forControlEvents:UIControlEventTouchUpInside];
-    self.backButton.enabled = NO;
-    self.forwardButton.enabled = NO;
-    
-    //menu button
-    [self.menuButton addTarget:self action:@selector(menuButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    self.menuButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    
-    //textField
-    self.searchTextField.delegate = self;
-    self.searchTextField.returnKeyType = UIReturnKeySearch;
-    self.searchTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
-    [self.KVOController observe:self.webView keyPath:@"title" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
-        typeof(weakSelf) strongSelf = weakSelf;
-        strongSelf.searchTextField.text = change[NSKeyValueChangeNewKey];
-    }];
-    
-    //constraint
-    [self.webView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.headerView.mas_bottom);
-        make.left.equalTo(self.view);
-        make.right.equalTo(self.view);
-        make.bottom.equalTo(self.view);
-    }];
-    
-    [self.resignButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.searchTextField.mas_right).offset(8.0);
-        make.top.equalTo(self.searchTextField.mas_top);
-        make.bottom.equalTo(self.searchTextField.mas_bottom);
-        make.width.equalTo(@40.0);
-    }];
+    [self initializeWebView];//webView
+    [self initializeResignButton];//resign button
+    [self setUpBackForwardAndMenuButton];//back , forward and menu button
+    [self setUpSearchTextField];//search text field
+    [self initialProgressView];//progress view;
+    [self setUpKVO];//KVO
+    [self setUpConstraints];//constraint
 }
 
 - (void)didReceiveMemoryWarning {
@@ -160,15 +105,15 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     textField.text = [self.webView.URL absoluteString];
     _offsetOfSearchTextFieldTrailing = CGRectGetWidth(self.resignButton.bounds) + constant;
     self.trailingOfSearchTextField.constant += _offsetOfSearchTextFieldTrailing;
-    [UIView animateWithDuration:0.2 animations:^{
+    [UIView animateWithDuration:0.5 animations:^{
         [self.headerView layoutIfNeeded];
     }];
-    
     
     return YES;
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
+    
 }
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
@@ -221,13 +166,154 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (void)menuButtonAction:(UIButton *)button {
-    
-    [BHBPopView showToView:self.view andImages:@[@"collect", @"collect"] andTitles:@[@"添加书签", @"书签"] andSelectBlock:^(BHBItem *item) {
+    static BOOL show = NO;
+    static WHPopView *popView = nil;
+    if(!show) {
+        UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 0.0, CGRectGetHeight(self.menuView.bounds), 0.0);
         
-    }];
-    
-    
+        popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"collect", @"collect", @"collect", @"collect"] titles:@[@"收藏", @"收藏", @"收藏" , @"收藏", @"收藏"] showBlock:^ {
+            show = YES;
+        } hideBlock:^{
+            show = NO;
+            popView= nil;
+        } selectedBlock:^(NSInteger index) {
+            
+            NSLog(@"seleted item at : %ld", index);
+        }];
+    } else {
+        [popView hide];
+    }
 }
 
+- (void)rightViewButtonAction:(UIButton *)button {
+    if(self.webView.isLoading) {
+        [self.webView stopLoading];
+    }
+}
+
+#pragma mark - private methods
+- (void)initializeWebView {
+    WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
+    self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
+    self.webView.allowsBackForwardNavigationGestures = YES;
+    self.webView.UIDelegate = self;
+    self.webView.navigationDelegate = self;
+    [self.view insertSubview:self.webView belowSubview:self.menuView];
+    self.webView.scrollView.contentInset = UIEdgeInsetsMake(0.0, 0.0, 50.0, 0.0);
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
+}
+
+- (void)initializeResignButton {
+    self.resignButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.resignButton addTarget:self action:@selector(resignButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.resignButton setTitle:@"取消" forState:UIControlStateNormal];
+    [self.headerView addSubview:self.resignButton];
+}
+
+- (void)setUpBackForwardAndMenuButton {
+    //back and forward button
+    [self.backButton addTarget:self action:@selector(goBackButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.forwardButton addTarget:self action:@selector(goForwardButton:) forControlEvents:UIControlEventTouchUpInside];
+    self.backButton.enabled = NO;
+    self.forwardButton.enabled = NO;
+    
+    //menu button
+    [self.menuButton addTarget:self action:@selector(menuButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    self.menuButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+}
+
+- (void)setUpSearchTextField {
+    //textField
+    self.searchTextField.delegate = self;
+    self.searchTextField.returnKeyType = UIReturnKeySearch;
+    self.searchTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
+
+    //textField right view
+    UIButton *rightView = [UIButton buttonWithType:UIButtonTypeCustom];
+    [rightView addTarget:self action:@selector(rightViewButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    rightView.frame = CGRectMake(0.0, 0.0, 40.0, 40.0);
+    [rightView setTitle:@"X" forState:UIControlStateNormal];
+    [rightView setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    self.searchTextField.rightView = rightView;
+    self.searchTextField.rightViewMode = UITextFieldViewModeNever;
+}
+
+- (void)initialProgressView {
+    self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+    [self.headerView addSubview:self.progressView];
+    self.progressView.progress = 0.0;
+}
+
+- (void)setUpKVO {
+    //kvo
+    FBKVOController *kvoController = [FBKVOController controllerWithObserver:self];
+    self.KVOController = kvoController;
+    __weak typeof(self) weakSelf = self;
+    
+    [self.KVOController observe:self.webView keyPath:@"canGoBack" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+        typeof(weakSelf) strongSelf = weakSelf;
+        NSNumber *num = (NSNumber *)change[NSKeyValueChangeNewKey];
+        strongSelf.backButton.enabled = num.boolValue;
+    }];
+    [self.KVOController observe:self.webView keyPath:@"canGoForward" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+        typeof(weakSelf) strongSelf = weakSelf;
+        NSNumber *num = (NSNumber *)change[NSKeyValueChangeNewKey];
+        strongSelf.forwardButton.enabled = num.boolValue;
+    }];
+    
+    //about progress view and text field right view
+    [self.KVOController observe:self.webView keyPath:@"loading" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+        
+        typeof(weakSelf) strongSelf = weakSelf;
+        NSNumber *num = (NSNumber *)change[NSKeyValueChangeNewKey];
+        if(num.boolValue) {
+            strongSelf.progressView.hidden =NO; //progress view
+            strongSelf.searchTextField.rightViewMode = UITextFieldViewModeUnlessEditing;//text field right view
+        } else {
+            strongSelf.progressView.hidden = YES; //progress view
+            strongSelf.searchTextField.rightViewMode = UITextFieldViewModeNever; //text field right view
+        }
+    }];
+    [self.KVOController observe:self.webView keyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+        typeof(weakSelf) strongSelf  = weakSelf;
+        if(strongSelf.progressView.isHidden) {
+            return;
+        }
+        NSNumber *num = (NSNumber *)change[NSKeyValueChangeNewKey];
+        strongSelf.progressView.progress = num.doubleValue;
+        if(strongSelf.progressView.progress >= 9.9999) {
+            strongSelf.progressView.hidden = YES;
+        }
+    }];
+    
+    // observe web view title
+    [self.KVOController observe:self.webView keyPath:@"title" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+        typeof(weakSelf) strongSelf = weakSelf;
+        strongSelf.searchTextField.text = change[NSKeyValueChangeNewKey];
+    }];
+}
+
+- (void)setUpConstraints {
+    [self.webView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.headerView.mas_bottom);
+        make.left.equalTo(self.view);
+        make.right.equalTo(self.view);
+        make.bottom.equalTo(self.view);
+    }];
+    
+    [self.resignButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.searchTextField.mas_right).offset(8.0);
+        make.top.equalTo(self.searchTextField.mas_top);
+        make.bottom.equalTo(self.searchTextField.mas_bottom);
+        make.width.equalTo(@40.0);
+    }];
+    
+    [self.progressView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.headerView);
+        make.bottom.equalTo(self.headerView);
+        make.right.equalTo(self.headerView);
+        make.height.equalTo(@3.0);
+    }];
+}
 
 @end

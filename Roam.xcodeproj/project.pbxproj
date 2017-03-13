@@ -16,6 +16,9 @@
 		D7CA2AC31E690A44003B138C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D7CA2AC11E690A44003B138C /* LaunchScreen.storyboard */; };
 		D7CA2ACE1E690A44003B138C /* RoamTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2ACD1E690A44003B138C /* RoamTests.m */; };
 		D7CA2AD91E690A44003B138C /* RoamUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2AD81E690A44003B138C /* RoamUITests.m */; };
+		D7F064EC1E7146BC0050B857 /* WHPopView.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F064EB1E7146BC0050B857 /* WHPopView.m */; };
+		D7F064F11E716F4D0050B857 /* ItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F064EF1E716F4D0050B857 /* ItemCell.m */; };
+		D7F064F21E716F4D0050B857 /* ItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D7F064F01E716F4D0050B857 /* ItemCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +58,11 @@
 		D7CA2AD41E690A44003B138C /* RoamUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoamUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CA2AD81E690A44003B138C /* RoamUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoamUITests.m; sourceTree = "<group>"; };
 		D7CA2ADA1E690A44003B138C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D7F064EA1E7146BC0050B857 /* WHPopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WHPopView.h; sourceTree = "<group>"; };
+		D7F064EB1E7146BC0050B857 /* WHPopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WHPopView.m; sourceTree = "<group>"; };
+		D7F064EE1E716F4D0050B857 /* ItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ItemCell.h; path = "Item Cell/ItemCell.h"; sourceTree = "<group>"; };
+		D7F064EF1E716F4D0050B857 /* ItemCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ItemCell.m; path = "Item Cell/ItemCell.m"; sourceTree = "<group>"; };
+		D7F064F01E716F4D0050B857 /* ItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ItemCell.xib; path = "Item Cell/ItemCell.xib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +133,7 @@
 		D7CA2AB21E690A44003B138C /* Roam */ = {
 			isa = PBXGroup;
 			children = (
+				D7F064E91E7146A30050B857 /* Pop View */,
 				D7CA2AB61E690A44003B138C /* AppDelegate.h */,
 				D7CA2AB71E690A44003B138C /* AppDelegate.m */,
 				D7CA2AB91E690A44003B138C /* MainViewController.h */,
@@ -162,6 +171,26 @@
 				D7CA2ADA1E690A44003B138C /* Info.plist */,
 			);
 			path = RoamUITests;
+			sourceTree = "<group>";
+		};
+		D7F064E91E7146A30050B857 /* Pop View */ = {
+			isa = PBXGroup;
+			children = (
+				D7F064EA1E7146BC0050B857 /* WHPopView.h */,
+				D7F064EB1E7146BC0050B857 /* WHPopView.m */,
+				D7F064ED1E716F0D0050B857 /* Item Cell */,
+			);
+			name = "Pop View";
+			sourceTree = "<group>";
+		};
+		D7F064ED1E716F0D0050B857 /* Item Cell */ = {
+			isa = PBXGroup;
+			children = (
+				D7F064EE1E716F4D0050B857 /* ItemCell.h */,
+				D7F064EF1E716F4D0050B857 /* ItemCell.m */,
+				D7F064F01E716F4D0050B857 /* ItemCell.xib */,
+			);
+			name = "Item Cell";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -273,6 +302,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7F064F21E716F4D0050B857 /* ItemCell.xib in Resources */,
 				D7CA2AC31E690A44003B138C /* LaunchScreen.storyboard in Resources */,
 				D7CA2AC01E690A44003B138C /* Assets.xcassets in Resources */,
 				D7CA2ABE1E690A44003B138C /* Main.storyboard in Resources */,
@@ -348,9 +378,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7F064F11E716F4D0050B857 /* ItemCell.m in Sources */,
 				D7CA2ABB1E690A44003B138C /* MainViewController.m in Sources */,
 				D7CA2AB81E690A44003B138C /* AppDelegate.m in Sources */,
 				D7CA2AB51E690A44003B138C /* main.m in Sources */,
+				D7F064EC1E7146BC0050B857 /* WHPopView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
