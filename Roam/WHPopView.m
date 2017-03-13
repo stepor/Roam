@@ -33,9 +33,6 @@ static NSString *const reuseID_itemCell = @"itemCell";
     [superView addSubview:view];
     view.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.3];
     view.clipsToBounds = YES;
-        //gesture
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:view action:@selector(tapAction:)];
-    [view addGestureRecognizer:tap];
     
     // images , title  , block
     view.images = images;
@@ -81,12 +78,6 @@ static NSString *const reuseID_itemCell = @"itemCell";
     return view;
 }
 
-
-#pragma mark - gesture action
-- (void)tapAction:(UITapGestureRecognizer *)tap {
-    [self hide];
-}
-
 #pragma mark - <UICollectionViewDataSource>
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     return 1;
@@ -128,6 +119,10 @@ static NSString *const reuseID_itemCell = @"itemCell";
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
     self.selectedBlock(indexPath.row);
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [self hide];
 }
 
 @end
