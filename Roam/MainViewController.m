@@ -168,10 +168,11 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 - (void)menuButtonAction:(UIButton *)button {
     static BOOL show = NO;
     static WHPopView *popView = nil;
+    __weak typeof(self) weakSelf = self;
     if(!show) {
         UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 0.0, CGRectGetHeight(self.menuView.bounds), 0.0);
         
-        popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"bookmark", @"collect", @"collect", @"collect"] titles:@[@"添加书签", @"书签/历史", @"收藏" , @"收藏", @"收藏"] showBlock:^ {
+        popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"bookmark", @"update", @"share", @"setting"] titles:@[@"添加书签", @"书签/历史", @"刷新" , @"分享", @"设置"] showBlock:^ {
             show = YES;
         } hideBlock:^{
             show = NO;
@@ -179,6 +180,11 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         } selectedBlock:^(NSInteger index) {
             
             NSLog(@"seleted item at : %ld", index);
+            typeof(weakSelf) strongSelf = weakSelf;
+            if(index == 0) {
+                [popView hide];
+                [strongSelf showAddingBookmarkAlert];
+            }
         }];
     } else {
         [popView hide];
@@ -314,6 +320,24 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         make.right.equalTo(self.headerView);
         make.height.equalTo(@3.0);
     }];
+}
+
+- (void)showAddingBookmarkAlert {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"添加书签" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *action0 = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    }];
+    UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"保存" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+        NSLog(@"absolutely: %@", self.webView.URL.absoluteString);
+    }];
+    [alert addAction:action0];
+    [alert addAction:action1];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.text = @"have a try!";
+    }];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.text = @"one more time!";
+    }];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 @end
