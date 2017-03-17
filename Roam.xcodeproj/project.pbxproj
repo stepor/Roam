@@ -20,6 +20,9 @@
 		D7F064F11E716F4D0050B857 /* ItemCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F064EF1E716F4D0050B857 /* ItemCell.m */; };
 		D7F064F21E716F4D0050B857 /* ItemCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D7F064F01E716F4D0050B857 /* ItemCell.xib */; };
 		D7F0653B1E7792C90050B857 /* WHDialogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F0653A1E7792C90050B857 /* WHDialogViewController.m */; };
+		D7F065421E7A3C910050B857 /* CoreDataHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F065411E7A3C910050B857 /* CoreDataHelper.m */; };
+		D7F065441E7A3CF20050B857 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7F065431E7A3CF20050B857 /* CoreData.framework */; };
+		D7F065481E7A8C1E0050B857 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D7F065451E7A82FC0050B857 /* Model.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +69,10 @@
 		D7F064F01E716F4D0050B857 /* ItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ItemCell.xib; path = "Item Cell/ItemCell.xib"; sourceTree = "<group>"; };
 		D7F065391E7792C90050B857 /* WHDialogViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WHDialogViewController.h; path = wHDialogViewController/WHDialogViewController.h; sourceTree = "<group>"; };
 		D7F0653A1E7792C90050B857 /* WHDialogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WHDialogViewController.m; path = wHDialogViewController/WHDialogViewController.m; sourceTree = "<group>"; };
+		D7F065401E7A3C910050B857 /* CoreDataHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoreDataHelper.h; path = "Core Data/CoreDataHelper.h"; sourceTree = "<group>"; };
+		D7F065411E7A3C910050B857 /* CoreDataHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CoreDataHelper.m; path = "Core Data/CoreDataHelper.m"; sourceTree = "<group>"; };
+		D7F065431E7A3CF20050B857 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		D7F065461E7A82FC0050B857 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7F065441E7A3CF20050B857 /* CoreData.framework in Frameworks */,
 				79C55A619D6768BB869EE101 /* Pods_Roam.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -97,6 +105,7 @@
 		0DEFEB306C0FD8907BF5E0F0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D7F065431E7A3CF20050B857 /* CoreData.framework */,
 				0483571199241373B49CCFBA /* Pods_Roam.framework */,
 			);
 			name = Frameworks;
@@ -136,6 +145,7 @@
 		D7CA2AB21E690A44003B138C /* Roam */ = {
 			isa = PBXGroup;
 			children = (
+				D7F0653C1E7A3C000050B857 /* Core Data */,
 				D7F065381E7791980050B857 /* WHDialogViewController */,
 				D7F064E91E7146A30050B857 /* Pop View */,
 				D7CA2AB61E690A44003B138C /* AppDelegate.h */,
@@ -143,6 +153,7 @@
 				D7CA2AB91E690A44003B138C /* MainViewController.h */,
 				D7CA2ABA1E690A44003B138C /* MainViewController.m */,
 				D7CA2ABC1E690A44003B138C /* Main.storyboard */,
+				D7F065451E7A82FC0050B857 /* Model.xcdatamodeld */,
 				D7CA2ABF1E690A44003B138C /* Assets.xcassets */,
 				D7CA2AC11E690A44003B138C /* LaunchScreen.storyboard */,
 				D7CA2AC41E690A44003B138C /* Info.plist */,
@@ -204,6 +215,15 @@
 				D7F0653A1E7792C90050B857 /* WHDialogViewController.m */,
 			);
 			name = WHDialogViewController;
+			sourceTree = "<group>";
+		};
+		D7F0653C1E7A3C000050B857 /* Core Data */ = {
+			isa = PBXGroup;
+			children = (
+				D7F065401E7A3C910050B857 /* CoreDataHelper.h */,
+				D7F065411E7A3C910050B857 /* CoreDataHelper.m */,
+			);
+			name = "Core Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -394,9 +414,11 @@
 				D7F064F11E716F4D0050B857 /* ItemCell.m in Sources */,
 				D7CA2ABB1E690A44003B138C /* MainViewController.m in Sources */,
 				D7CA2AB81E690A44003B138C /* AppDelegate.m in Sources */,
+				D7F065481E7A8C1E0050B857 /* Model.xcdatamodeld in Sources */,
 				D7F0653B1E7792C90050B857 /* WHDialogViewController.m in Sources */,
 				D7CA2AB51E690A44003B138C /* main.m in Sources */,
 				D7F064EC1E7146BC0050B857 /* WHPopView.m in Sources */,
+				D7F065421E7A3C910050B857 /* CoreDataHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -653,6 +675,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		D7F065451E7A82FC0050B857 /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				D7F065461E7A82FC0050B857 /* Model.xcdatamodel */,
+			);
+			currentVersion = D7F065461E7A82FC0050B857 /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = D7CA2AA81E690A44003B138C /* Project object */;
 }

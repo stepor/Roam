@@ -12,6 +12,15 @@
 #import <KVOController/KVOController.h>
 #import <BHBPopView/BHBPopView.h>
 #import "WHPopView.h"
+#import <SDWebImage/UIImageView+WebCache.h>
+#import "Model+CoreDataModel.h"
+#import "CoreDataHelper.h"
+#import <MBProgressHUD/MBProgressHUD.h>
+
+typedef NS_ENUM(NSInteger, TagTextField) {
+    TagTextFieldTitle = 0,
+    TagTextFieldURLString = 1
+};
 
 @interface MainViewController ()<WKNavigationDelegate, WKUIDelegate, UITextFieldDelegate>
 
@@ -101,27 +110,27 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 #pragma mark - <UITextFieldDelegate>
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    CGFloat constant = self.trailingOfSearchTextField.constant;
-    textField.text = [self.webView.URL absoluteString];
-    _offsetOfSearchTextFieldTrailing = CGRectGetWidth(self.resignButton.bounds) + constant;
-    self.trailingOfSearchTextField.constant += _offsetOfSearchTextFieldTrailing;
-    [UIView animateWithDuration:0.5 animations:^{
-        [self.headerView layoutIfNeeded];
-    }];
+    if(textField == self.searchTextField) {
+        CGFloat constant = self.trailingOfSearchTextField.constant;
+        textField.text = [self.webView.URL absoluteString];
+        _offsetOfSearchTextFieldTrailing = CGRectGetWidth(self.resignButton.bounds) + constant;
+        self.trailingOfSearchTextField.constant += _offsetOfSearchTextFieldTrailing;
+        [UIView animateWithDuration:0.5 animations:^{
+            [self.headerView layoutIfNeeded];
+        }];
+    }
     
     return YES;
 }
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField {
-    
-}
-
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
-    textField.text = self.webView.title;
-    self.trailingOfSearchTextField.constant -= _offsetOfSearchTextFieldTrailing;
-    [UIView animateWithDuration:0.5 animations:^{
-        [self.headerView layoutIfNeeded];
-    }];
+    if(textField == self.searchTextField) {
+        textField.text = self.webView.title;
+        self.trailingOfSearchTextField.constant -= _offsetOfSearchTextFieldTrailing;
+        [UIView animateWithDuration:0.5 animations:^{
+            [self.headerView layoutIfNeeded];
+        }];
+    }
     return YES;
 }
 
@@ -138,12 +147,14 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    if([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:textField.text]]) {
-        [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:textField.text]]];
-    } else {
-        [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"baidu.com"]]];
-        NSString *searchStr = [[prefixSearchString stringByAppendingString:textField.text] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:searchStr]]];
+    if(textField == self.searchTextField) {
+        if([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:textField.text]]) {
+            [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:textField.text]]];
+        } else {
+            [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"baidu.com"]]];
+            NSString *searchStr = [[prefixSearchString stringByAppendingString:textField.text] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:searchStr]]];
+        }
     }
     return YES;
 }
@@ -181,10 +192,37 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
             
             NSLog(@"seleted item at : %ld", index);
             typeof(weakSelf) strongSelf = weakSelf;
+        
+            [popView hide];
             if(index == 0) {
-                [popView hide];
+                NSError *error = nil;
+                NSArray<WebViewInfo *> *arr = [[CoreDataHelper shareInstance].context executeFetchRequest:[WebViewInfo fetchRequest] error:&error];
+                if(error) {
+                    NSLog(@"Context Fail to execute fetch request: %@", error);
+                    return;
+                }
+                if(arr.count > 0) {//如果当前页面已经存在标签中，提示用户
+                    for(WebViewInfo *info in arr) {
+                        if([info.urlString isEqualToString:strongSelf.webView.URL.absoluteString]) {
+                            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:strongSelf.view animated:YES];
+                            hud.removeFromSuperViewOnHide = YES;
+                            hud.mode = MBProgressHUDModeText;
+                            hud.minShowTime = 2.0;
+                            hud.label.text = [NSString stringWithFormat:@"已存在标签栏中，其标题为\"%@\"", info.title];
+                            dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2);
+                            dispatch_after(delayTime, dispatch_get_main_queue(), ^{
+                                [MBProgressHUD hideHUDForView:strongSelf.view animated:YES];
+                            });
+                            return;
+                        }
+                    }
+                }
+                
+                
                 [strongSelf showAddingBookmarkAlert];
             }
+            
+        
         }];
     } else {
         [popView hide];
@@ -323,21 +361,73 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (void)showAddingBookmarkAlert {
+    __weak typeof(self) weakSelf = self;
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"添加书签" message:nil preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *action0 = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *action0 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
     }];
     UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"保存" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        NSLog(@"absolutely: %@", self.webView.URL.absoluteString);
+        
+        WebViewInfo *info = [NSEntityDescription insertNewObjectForEntityForName:@"WebViewInfo" inManagedObjectContext:[CoreDataHelper shareInstance].context];
+        for(UITextField *textField in alert.textFields) {
+            switch (textField.tag) {
+                case TagTextFieldTitle:
+                    info.title = textField.text;
+                    break;
+                case TagTextFieldURLString:
+                    info.urlString = textField.text;
+                    break;
+                default:
+                    break;
+            }
+        }
+        
     }];
     [alert addAction:action0];
     [alert addAction:action1];
     [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-        textField.text = @"have a try!";
+        typeof(weakSelf) strongSelf = weakSelf;
+        textField.text = strongSelf.webView.title;
+        textField.tag = TagTextFieldTitle;
+        //textField.delegate = strongSelf;
+        UIImageView *iconView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 18.0, 18.0)];
+        textField.leftView = iconView;
+        textField.enabled = NO;
+        iconView.contentMode = UIViewContentModeScaleAspectFit;
+        textField.leftViewMode = UITextFieldViewModeAlways;
+        NSURL *iconURL = [NSURL URLWithString:[self iconURLString]];
+        [iconView sd_setImageWithURL:iconURL placeholderImage:[UIImage imageNamed:@"defaultIcon"]];
     }];
     [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-        textField.text = @"one more time!";
+        typeof(weakSelf) strongSelf = weakSelf;
+        textField.tag = TagTextFieldURLString;
+        //textField.delegate = strongSelf;
+        textField.text = strongSelf.webView.URL.absoluteString;
+        textField.enabled = NO;
     }];
-    [self presentViewController:alert animated:YES completion:nil];
+    [self presentViewController:alert animated:YES completion:^{
+        for(UITextField *textField in alert.textFields) {
+            textField.enabled = YES;
+        }
+    }];
+}
+
+- (NSString *)iconURLString {
+    NSString *absoluteStr = self.webView.URL.absoluteString;
+    NSInteger toIndex = 0;
+    NSInteger count  = 3;
+    
+    for(NSInteger i = 0; i < absoluteStr.length; i++) {
+        unichar character = [absoluteStr characterAtIndex:i];
+        if(character == '/') {
+            count--;
+            if(count == 0) {
+                toIndex = i;
+                break;
+            }
+        }
+    }
+    
+    return [[absoluteStr substringToIndex:toIndex] stringByAppendingString:@"/favicon.ico"];
 }
 
 @end
