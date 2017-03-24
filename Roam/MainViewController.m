@@ -16,13 +16,16 @@
 #import "Model+CoreDataModel.h"
 #import "CoreDataHelper.h"
 #import <MBProgressHUD/MBProgressHUD.h>
+#import "SegmentViewController.h"
+#import "BookmarksViewController.h"
+#import "HIstoryViewController.h"
 
 typedef NS_ENUM(NSInteger, TagTextField) {
     TagTextFieldTitle = 0,
     TagTextFieldURLString = 1
 };
 
-@interface MainViewController ()<WKNavigationDelegate, WKUIDelegate, UITextFieldDelegate>
+@interface MainViewController ()<WKNavigationDelegate, WKUIDelegate, UITextFieldDelegate, SegmentViewControllerDelegate>
 
 @property (strong, nonatomic) WKWebView *webView;
 //header view
@@ -156,8 +159,24 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
                 [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:searchStr]]];
         }
     }
+    [textField resignFirstResponder];
     return YES;
 }
+
+#pragma mark - <SegmentViewControllerDelegate>
+- (void)SegmentViewController:(SegmentViewController *)segmentViewController didSelectItemAtIndex:(NSInteger)index {
+    
+    if(index == 0) {
+        segmentViewController.navigationItem.rightBarButtonItem = nil;
+    } else if(index == 1) {
+        HistoryViewController *hvc = (HistoryViewController *)segmentViewController.childViewControllers[index];
+        UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithTitle:@"清除" style:UIBarButtonItemStylePlain target:hvc action:@selector(clearAllHistories)];
+        segmentViewController.navigationItem.rightBarButtonItem = rightItem;
+    }
+    
+}
+
+
 
 #pragma mark - Button Action
 - (void)goBackButtonAction:(UIButton *)button {
@@ -192,36 +211,20 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
             
             NSLog(@"seleted item at : %ld", index);
             typeof(weakSelf) strongSelf = weakSelf;
-        
             [popView hide];
-            if(index == 0) {
-                NSError *error = nil;
-                NSArray<WebViewInfo *> *arr = [[CoreDataHelper shareInstance].context executeFetchRequest:[WebViewInfo fetchRequest] error:&error];
-                if(error) {
-                    NSLog(@"Context Fail to execute fetch request: %@", error);
-                    return;
-                }
-                if(arr.count > 0) {//如果当前页面已经存在标签中，提示用户
-                    for(WebViewInfo *info in arr) {
-                        if([info.urlString isEqualToString:strongSelf.webView.URL.absoluteString]) {
-                            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:strongSelf.view animated:YES];
-                            hud.removeFromSuperViewOnHide = YES;
-                            hud.mode = MBProgressHUDModeText;
-                            hud.minShowTime = 2.0;
-                            hud.label.text = [NSString stringWithFormat:@"已存在标签栏中，其标题为\"%@\"", info.title];
-                            dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2);
-                            dispatch_after(delayTime, dispatch_get_main_queue(), ^{
-                                [MBProgressHUD hideHUDForView:strongSelf.view animated:YES];
-                            });
-                            return;
-                        }
-                    }
-                }
-                
-                
-                [strongSelf showAddingBookmarkAlert];
+            switch (index) {
+                case 0:
+                    [strongSelf selectAddingBookmark];
+                    break;
+                case 1:
+                    [strongSelf selectBookmarksAndHistory];
+                    break;
+                case 2:
+                    [strongSelf selectRefresh];
+                    break;
+                default:
+                    break;
             }
-            
         
         }];
     } else {
@@ -234,6 +237,71 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         [self.webView stopLoading];
     }
 }
+
+#pragma mark - Button on menu action
+- (void)selectAddingBookmark {
+    NSError *error = nil;
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"isHistory == NO"];
+    NSFetchRequest *fetchRequest = [WebViewInfo fetchRequest];
+    fetchRequest.predicate = predicate;
+    NSArray<WebViewInfo *> *arr = [[CoreDataHelper shareInstance].context executeFetchRequest:fetchRequest error:&error];
+    if(error) {
+        NSLog(@"Context Fail to execute fetch request: %@", error);
+        return;
+    }
+    if(arr.count > 0) {//如果当前页面已经存在标签中，提示用户
+        for(WebViewInfo *info in arr) {
+            if([info.urlString isEqualToString:self.webView.URL.absoluteString]) {
+                MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                hud.removeFromSuperViewOnHide = YES;
+                hud.mode = MBProgressHUDModeText;
+                hud.minShowTime = 2.0;
+                hud.label.text = [NSString stringWithFormat:@"已存在标签栏中，其标题为\"%@\"", info.title];
+                dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2);
+                dispatch_after(delayTime, dispatch_get_main_queue(), ^{
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                });
+                return;
+            }
+        }
+    }
+    [self showAddingBookmarkAlert];
+}
+
+- (void)selectBookmarksAndHistory {
+// bookmark view controller
+    BookmarksViewController *bookMarkVC = [[BookmarksViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    bookMarkVC.currentWebView = self.webView;
+    bookMarkVC.navigationItem.title = @"书签";
+// history view controller
+    HistoryViewController *histortyVC = [[HistoryViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    histortyVC.currentWebView = self.webView;
+    histortyVC.title = @"历史";
+// segment view controller
+    SegmentViewController *segmentVC = [[SegmentViewController alloc] initWithViewControllers:@[bookMarkVC, histortyVC]];
+    segmentVC.delegate = self;
+    UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStylePlain target:self action:@selector(leftItemAction:)];
+    
+    segmentVC.navigationItem.leftBarButtonItem = leftItem;
+//navigation controller
+    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:segmentVC];
+    navi.navigationBar.hidden = NO;
+    
+    [self presentViewController:navi animated:YES completion:nil];
+}
+
+- (void)leftItemAction:(id)sender {
+    UINavigationController *navi = (UINavigationController *)self.presentedViewController;
+    SegmentViewController *segmentVC = (SegmentViewController *)navi.viewControllers[0];
+    [self dismissViewControllerAnimated:YES completion:^{
+        [segmentVC reomveAllChildViewControllers];
+    }];
+}
+
+- (void)selectRefresh {
+    [self.webView reloadFromOrigin];
+}
+
 
 #pragma mark - private methods
 - (void)initializeWebView {
@@ -305,7 +373,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         strongSelf.forwardButton.enabled = num.boolValue;
     }];
     
-    //about progress view and text field right view
+    //about progress view and text field right view , history as well
     [self.KVOController observe:self.webView keyPath:@"loading" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
         
         typeof(weakSelf) strongSelf = weakSelf;
@@ -313,6 +381,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         if(num.boolValue) {
             strongSelf.progressView.hidden =NO; //progress view
             strongSelf.searchTextField.rightViewMode = UITextFieldViewModeUnlessEditing;//text field right view
+            
         } else {
             strongSelf.progressView.hidden = YES; //progress view
             strongSelf.searchTextField.rightViewMode = UITextFieldViewModeNever; //text field right view
@@ -334,6 +403,11 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     [self.KVOController observe:self.webView keyPath:@"title" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
         typeof(weakSelf) strongSelf = weakSelf;
         strongSelf.searchTextField.text = change[NSKeyValueChangeNewKey];
+        
+        //检查当前页面是否应该加入历史记录
+        if(self.webView.title.length > 2) {
+            [strongSelf addCurrentWebViewToHistory];
+        }
     }];
 }
 
@@ -368,6 +442,9 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"保存" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
         
         WebViewInfo *info = [NSEntityDescription insertNewObjectForEntityForName:@"WebViewInfo" inManagedObjectContext:[CoreDataHelper shareInstance].context];
+        info.imageUrlString = [self iconURLString];
+        info.date = [NSDate date];
+        info.isHistory = NO;
         for(UITextField *textField in alert.textFields) {
             switch (textField.tag) {
                 case TagTextFieldTitle:
@@ -395,7 +472,10 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         iconView.contentMode = UIViewContentModeScaleAspectFit;
         textField.leftViewMode = UITextFieldViewModeAlways;
         NSURL *iconURL = [NSURL URLWithString:[self iconURLString]];
-        [iconView sd_setImageWithURL:iconURL placeholderImage:[UIImage imageNamed:@"defaultIcon"]];
+        NSLog(@"url string: %@", [self iconURLString]);
+        //[iconView sd_setImageWithURL:iconURL placeholderImage:[UIImage imageNamed:@"defaultIcon"]];
+        
+        [iconView sd_setImageWithURL:iconURL placeholderImage:[UIImage imageNamed:@"defaultIcon"] options:SDWebImageAllowInvalidSSLCertificates];
     }];
     [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         typeof(weakSelf) strongSelf = weakSelf;
@@ -426,8 +506,34 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
             }
         }
     }
-    
     return [[absoluteStr substringToIndex:toIndex] stringByAppendingString:@"/favicon.ico"];
 }
 
+- (void)addCurrentWebViewToHistory {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K MATCHES %@ && isHistory == YES",@"title", self.webView.title];
+    NSFetchRequest *fetchRequest = [WebViewInfo fetchRequest];
+    fetchRequest.predicate = predicate;
+    NSError *error  = nil;
+    NSArray <WebViewInfo *> *arr = [[CoreDataHelper shareInstance].context executeFetchRequest:fetchRequest error:&error];
+    if(error) {
+        NSLog(@"Fetch request error : %@", error);
+    }
+    
+    NSLog(@"满足两个条件的：%lu", arr.count);
+    
+    if(arr != nil  && arr.count > 0) {
+        if(arr.count > 1) {
+            @throw [NSException exceptionWithName:@"历史记录有重复" reason:@"不能重复历史记录" userInfo:nil];
+        }
+        WebViewInfo *info = arr[0];
+        info.date = [NSDate date];
+    } else {
+        WebViewInfo *info = [NSEntityDescription insertNewObjectForEntityForName:@"WebViewInfo" inManagedObjectContext:[CoreDataHelper shareInstance].context];
+        info.isHistory = YES;
+        info.title = self.webView.title;
+        info.imageUrlString = [self iconURLString];
+        info.urlString = self.webView.URL.absoluteString;
+        info.date = [NSDate date];
+    }
+}
 @end

@@ -23,6 +23,10 @@
 		D7F065421E7A3C910050B857 /* CoreDataHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F065411E7A3C910050B857 /* CoreDataHelper.m */; };
 		D7F065441E7A3CF20050B857 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7F065431E7A3CF20050B857 /* CoreData.framework */; };
 		D7F065481E7A8C1E0050B857 /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D7F065451E7A82FC0050B857 /* Model.xcdatamodeld */; };
+		D7F0654C1E7CD9110050B857 /* SegmentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F0654B1E7CD9110050B857 /* SegmentViewController.m */; };
+		D7F065531E8163030050B857 /* BookmarksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F065521E8163030050B857 /* BookmarksViewController.m */; };
+		D7F065571E8166C70050B857 /* BookmarkCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F065561E8166C70050B857 /* BookmarkCell.m */; };
+		D7F0655B1E83B64E0050B857 /* HistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F0655A1E83B64E0050B857 /* HistoryViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +77,14 @@
 		D7F065411E7A3C910050B857 /* CoreDataHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CoreDataHelper.m; path = "Core Data/CoreDataHelper.m"; sourceTree = "<group>"; };
 		D7F065431E7A3CF20050B857 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		D7F065461E7A82FC0050B857 /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		D7F0654A1E7CD9110050B857 /* SegmentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SegmentViewController.h; path = SegmentViewController/SegmentViewController.h; sourceTree = "<group>"; };
+		D7F0654B1E7CD9110050B857 /* SegmentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SegmentViewController.m; path = SegmentViewController/SegmentViewController.m; sourceTree = "<group>"; };
+		D7F065511E8163030050B857 /* BookmarksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BookmarksViewController.h; path = BookmarksViewController/BookmarksViewController.h; sourceTree = "<group>"; };
+		D7F065521E8163030050B857 /* BookmarksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BookmarksViewController.m; path = BookmarksViewController/BookmarksViewController.m; sourceTree = "<group>"; };
+		D7F065551E8166C70050B857 /* BookmarkCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BookmarkCell.h; sourceTree = "<group>"; };
+		D7F065561E8166C70050B857 /* BookmarkCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarkCell.m; sourceTree = "<group>"; };
+		D7F065591E83B64E0050B857 /* HistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HistoryViewController.h; path = HistoryViewController/HistoryViewController.h; sourceTree = "<group>"; };
+		D7F0655A1E83B64E0050B857 /* HistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HistoryViewController.m; path = HistoryViewController/HistoryViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +157,9 @@
 		D7CA2AB21E690A44003B138C /* Roam */ = {
 			isa = PBXGroup;
 			children = (
+				D7F065581E83B5FC0050B857 /* HistoryViewController */,
+				D7F0654D1E8162B20050B857 /* BookmarksViewController */,
+				D7F065491E7CD8690050B857 /* SegmentViewController */,
 				D7F0653C1E7A3C000050B857 /* Core Data */,
 				D7F065381E7791980050B857 /* WHDialogViewController */,
 				D7F064E91E7146A30050B857 /* Pop View */,
@@ -224,6 +239,43 @@
 				D7F065411E7A3C910050B857 /* CoreDataHelper.m */,
 			);
 			name = "Core Data";
+			sourceTree = "<group>";
+		};
+		D7F065491E7CD8690050B857 /* SegmentViewController */ = {
+			isa = PBXGroup;
+			children = (
+				D7F0654A1E7CD9110050B857 /* SegmentViewController.h */,
+				D7F0654B1E7CD9110050B857 /* SegmentViewController.m */,
+			);
+			name = SegmentViewController;
+			sourceTree = "<group>";
+		};
+		D7F0654D1E8162B20050B857 /* BookmarksViewController */ = {
+			isa = PBXGroup;
+			children = (
+				D7F065541E8166A30050B857 /* BookmarkCell */,
+				D7F065511E8163030050B857 /* BookmarksViewController.h */,
+				D7F065521E8163030050B857 /* BookmarksViewController.m */,
+			);
+			name = BookmarksViewController;
+			sourceTree = "<group>";
+		};
+		D7F065541E8166A30050B857 /* BookmarkCell */ = {
+			isa = PBXGroup;
+			children = (
+				D7F065551E8166C70050B857 /* BookmarkCell.h */,
+				D7F065561E8166C70050B857 /* BookmarkCell.m */,
+			);
+			name = BookmarkCell;
+			sourceTree = "<group>";
+		};
+		D7F065581E83B5FC0050B857 /* HistoryViewController */ = {
+			isa = PBXGroup;
+			children = (
+				D7F065591E83B64E0050B857 /* HistoryViewController.h */,
+				D7F0655A1E83B64E0050B857 /* HistoryViewController.m */,
+			);
+			name = HistoryViewController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -411,13 +463,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7F0654C1E7CD9110050B857 /* SegmentViewController.m in Sources */,
 				D7F064F11E716F4D0050B857 /* ItemCell.m in Sources */,
+				D7F065531E8163030050B857 /* BookmarksViewController.m in Sources */,
 				D7CA2ABB1E690A44003B138C /* MainViewController.m in Sources */,
 				D7CA2AB81E690A44003B138C /* AppDelegate.m in Sources */,
 				D7F065481E7A8C1E0050B857 /* Model.xcdatamodeld in Sources */,
 				D7F0653B1E7792C90050B857 /* WHDialogViewController.m in Sources */,
+				D7F0655B1E83B64E0050B857 /* HistoryViewController.m in Sources */,
 				D7CA2AB51E690A44003B138C /* main.m in Sources */,
 				D7F064EC1E7146BC0050B857 /* WHPopView.m in Sources */,
+				D7F065571E8166C70050B857 /* BookmarkCell.m in Sources */,
 				D7F065421E7A3C910050B857 /* CoreDataHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
