@@ -200,10 +200,11 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     static WHPopView *popView = nil;
     __weak typeof(self) weakSelf = self;
     if(!show) {
+        show = YES;
         UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 0.0, CGRectGetHeight(self.menuView.bounds), 0.0);
         
         popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"bookmark", @"update", @"share", @"setting"] titles:@[@"添加书签", @"书签/历史", @"刷新" , @"分享", @"设置"] showBlock:^ {
-            show = YES;
+            
         } hideBlock:^{
             show = NO;
             popView= nil;
@@ -222,6 +223,8 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
                 case 2:
                     [strongSelf selectRefresh];
                     break;
+                case 3:
+                    [strongSelf showActivityViewController];
                 default:
                     break;
             }
@@ -519,8 +522,6 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         NSLog(@"Fetch request error : %@", error);
     }
     
-    NSLog(@"满足两个条件的：%lu", arr.count);
-    
     if(arr != nil  && arr.count > 0) {
         if(arr.count > 1) {
             @throw [NSException exceptionWithName:@"历史记录有重复" reason:@"不能重复历史记录" userInfo:nil];
@@ -535,5 +536,10 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         info.urlString = self.webView.URL.absoluteString;
         info.date = [NSDate date];
     }
+}
+
+- (void)showActivityViewController {
+    UIActivityViewController *activtyVC = [[UIActivityViewController alloc] initWithActivityItems:@[self.webView.URL] applicationActivities:nil];
+    [self presentViewController:activtyVC animated:YES completion:nil];
 }
 @end

@@ -348,6 +348,7 @@
 				TargetAttributes = {
 					D7CA2AAF1E690A44003B138C = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = E3M3E392L4;
 						ProvisioningStyle = Automatic;
 					};
 					D7CA2AC81E690A44003B138C = {
@@ -622,6 +623,7 @@
 			baseConfigurationReference = 8E548D499CDE5C0D2559F5FD /* Pods-Roam.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = E3M3E392L4;
 				INFOPLIST_FILE = Roam/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -636,6 +638,7 @@
 			baseConfigurationReference = 82686AAB57F448526042A93C /* Pods-Roam.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = E3M3E392L4;
 				INFOPLIST_FILE = Roam/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
