@@ -20,6 +20,7 @@
 #import "BookmarksViewController.h"
 #import "HIstoryViewController.h"
 
+
 typedef NS_ENUM(NSInteger, TagTextField) {
     TagTextFieldTitle = 0,
     TagTextFieldURLString = 1
@@ -35,10 +36,11 @@ typedef NS_ENUM(NSInteger, TagTextField) {
 @property (strong, nonatomic) UIProgressView *progressView;
 
 //menu
-@property (weak, nonatomic) IBOutlet UIView *menuView;
-@property (weak, nonatomic) IBOutlet UIButton *backButton;
-@property (weak, nonatomic) IBOutlet UIButton *forwardButton;
-@property (weak, nonatomic) IBOutlet UIButton *menuButton;
+@property (strong, nonatomic) UIButton *backButton;
+@property (strong, nonatomic) UIButton *forwardButton;
+@property (strong, nonatomic) UIButton *menuButton;
+@property (strong, nonatomic) UIButton *homeButton;
+@property (strong, nonatomic) UIButton *multiTaskButton;
 
 //constraint
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *trailingOfSearchTextField;
@@ -54,9 +56,9 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self configureToolBar];
     [self initializeWebView];//webView
     [self initializeResignButton];//resign button
-    [self setUpBackForwardAndMenuButton];//back , forward and menu button
     [self setUpSearchTextField];//search text field
     [self initialProgressView];//progress view;
     [self setUpKVO];//KVO
@@ -179,21 +181,14 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 
 #pragma mark - Button Action
-- (void)goBackButtonAction:(UIButton *)button {
-    
-    WKNavigation *navi = [self.webView goBack];
-    NSLog(@"%@",navi);
+- (void)backButtonAction:(UIButton *)button {
+    [self.webView goBack];
 }
 
-- (void)goForwardButton:(UIButton *)button {
-    WKNavigation *navi = [self.webView goForward];
-    //[self updateBackForwardButtonState];
-    NSLog(@"%@", navi);
+- (void)forwardButtonAction:(UIButton *)button {
+    [self.webView goForward];
 }
 
-- (void)resignButtonAction:(UIButton *)button {
-    [self.searchTextField resignFirstResponder];
-}
 
 - (void)menuButtonAction:(UIButton *)button {
     static BOOL show = NO;
@@ -201,7 +196,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     __weak typeof(self) weakSelf = self;
     if(!show) {
         show = YES;
-        UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 0.0, CGRectGetHeight(self.menuView.bounds), 0.0);
+        UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 0.0, 44.0, 0.0);
         
         popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"bookmark", @"update", @"share", @"setting"] titles:@[@"添加书签", @"书签/历史", @"刷新" , @"分享", @"设置"] showBlock:^ {
             
@@ -233,6 +228,18 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     } else {
         [popView hide];
     }
+}
+
+- (void)homeButtonAction:(UIButton *)button {
+    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
+}
+
+- (void)multiTaskButtonAction:(UIButton *)button {
+    NSLog(@"Touch on multi task button!");
+}
+
+- (void)resignButtonAction:(UIButton *)button {
+    [self.searchTextField resignFirstResponder];
 }
 
 - (void)rightViewButtonAction:(UIButton *)button {
@@ -310,12 +317,69 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 - (void)initializeWebView {
     WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
     self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
+    [self.view addSubview:self.webView];
     self.webView.allowsBackForwardNavigationGestures = YES;
     self.webView.UIDelegate = self;
     self.webView.navigationDelegate = self;
-    [self.view insertSubview:self.webView belowSubview:self.menuView];
     self.webView.scrollView.contentInset = UIEdgeInsetsMake(0.0, 0.0, 50.0, 0.0);
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
+}
+
+- (void)configureToolBar {
+    self.navigationController.toolbarHidden = NO;
+    self.navigationController.toolbar.tintColor = [UIColor blackColor];
+    
+    CGFloat width = CGRectGetWidth([UIScreen mainScreen].bounds) / 5.0;
+    CGFloat heigt = 44.0;
+    CGRect buttonFrame = CGRectMake(0.0, 0.0, width, heigt);
+    
+    self.backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.backButton.enabled = NO;
+    self.backButton.frame = buttonFrame;
+    [self.backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+    self.backButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [self.backButton addTarget:self action:@selector(backButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:self.backButton];
+    
+    self.forwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.forwardButton.enabled = NO;
+    self.forwardButton.frame = buttonFrame;
+    [self.forwardButton setImage:[UIImage imageNamed:@"forward"] forState:UIControlStateNormal];
+    self.forwardButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [self.forwardButton addTarget:self action:@selector(forwardButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *forwardItem = [[UIBarButtonItem alloc] initWithCustomView:self.forwardButton];
+    
+    self.menuButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.menuButton.frame = buttonFrame;
+    [self.menuButton setImage:[UIImage imageNamed:@"menu"] forState:UIControlStateNormal];
+    self.menuButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [self.menuButton addTarget:self action:@selector(menuButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *menuItem  = [[UIBarButtonItem alloc] initWithCustomView:self.menuButton];
+    
+    self.homeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.homeButton.frame = buttonFrame;
+    [self.homeButton setImage:[UIImage imageNamed:@"homePage"] forState:UIControlStateNormal];
+    self.homeButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [self.homeButton addTarget:self action:@selector(homeButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *homeItem = [[UIBarButtonItem alloc] initWithCustomView:self.homeButton];
+    
+    self.multiTaskButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.multiTaskButton.frame = buttonFrame;
+    [self.multiTaskButton setImage:[UIImage imageNamed:@"multiTask"] forState:UIControlStateNormal];
+    self.multiTaskButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    [self.multiTaskButton addTarget:self action:@selector(multiTaskButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *multiTaskItem = [[UIBarButtonItem alloc] initWithCustomView:self.multiTaskButton];
+    
+    UIBarButtonItem *flexibleItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
+    
+    NSArray *items = @[backItem, forwardItem, menuItem, homeItem, multiTaskItem];
+    for(UIBarButtonItem *item in items) {
+        item.width = width;
+        
+    }
+    
+    self.toolbarItems = @[backItem, flexibleItem, forwardItem, flexibleItem, menuItem, flexibleItem, homeItem, flexibleItem, multiTaskItem];
+    
 }
 
 - (void)initializeResignButton {
@@ -325,17 +389,6 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     [self.headerView addSubview:self.resignButton];
 }
 
-- (void)setUpBackForwardAndMenuButton {
-    //back and forward button
-    [self.backButton addTarget:self action:@selector(goBackButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.forwardButton addTarget:self action:@selector(goForwardButton:) forControlEvents:UIControlEventTouchUpInside];
-    self.backButton.enabled = NO;
-    self.forwardButton.enabled = NO;
-    
-    //menu button
-    [self.menuButton addTarget:self action:@selector(menuButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    self.menuButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
-}
 
 - (void)setUpSearchTextField {
     //textField
