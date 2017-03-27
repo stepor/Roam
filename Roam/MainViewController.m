@@ -19,6 +19,8 @@
 #import "BookmarksViewController.h"
 #import "HIstoryViewController.h"
 
+static NSString *const kIsNightMode = @"isNightMode";
+
 
 typedef NS_ENUM(NSInteger, TagTextField) {
     TagTextFieldTitle = 0,
@@ -41,6 +43,8 @@ typedef NS_ENUM(NSInteger, TagTextField) {
 @property (strong, nonatomic) UIButton *multiTaskButton;
 
 @property (strong, nonatomic) WHPopView *popView;
+
+@property (strong, nonatomic) UIView *nightModeView;
 @end
 
 @implementation MainViewController {
@@ -51,7 +55,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationController.hidesBarsOnSwipe = [[NSUserDefaults standardUserDefaults] boolForKey:kIsFullscreen];
+    [self initialization];
     [self configureToolBar];
     [self configureNavigationItem];
     [self initializeWebView];//webView
@@ -196,8 +200,10 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         
         BOOL isFullscreen = [[NSUserDefaults standardUserDefaults] boolForKey:kIsFullscreen];
         NSString *title_f = isFullscreen ? @"关闭全屏" : @"开启全屏";
+        BOOL isNightMode = [[NSUserDefaults standardUserDefaults] boolForKey:kIsNightMode];
+        NSString *title_n = isNightMode ? @"关闭夜间" : @"开启夜间";
         
-        self.popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"bookmark", @"update", @"share", @"setting", @"fullscreen"] titles:@[@"添加书签", @"书签/历史", @"刷新" , @"分享", @"设置", title_f] showBlock:^ {
+        self.popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"bookmark", @"update", @"share", @"setting", @"fullscreen", @"nightMode"] titles:@[@"添加书签", @"书签/历史", @"刷新" , @"分享", @"设置", title_f, title_n] showBlock:^ {
             
         } hideBlock:^{
             typeof(weakSelf) strongSelf = weakSelf;
@@ -219,8 +225,14 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
                 case 3:
                     [strongSelf selectShare];
                     break;
+                case 4:
+                    [UIApplication sharedApplication].keyWindow.tintAdjustmentMode = UIViewTintAdjustmentModeDimmed;
+                    break;
                 case 5:
                     [strongSelf selectFullscreen];
+                    break;
+                case 6:
+                    [strongSelf selectNightMode];
                     break;
                 default:
                     break;
@@ -326,17 +338,40 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     self.navigationController.hidesBarsOnSwipe = isFullscreen;
     if(self.popView) {
         NSString *title = isFullscreen ? @"关闭全屏" : @"开启全屏";
-        
-        NSLog(@"title: %@", title);
-        
         [self.popView updateTitle:title atIndex:5];
     }
     
     [[NSUserDefaults standardUserDefaults] setBool:isFullscreen forKey:kIsFullscreen];
 }
 
+- (void)selectNightMode {
+    BOOL isNightMode = ![[NSUserDefaults standardUserDefaults] boolForKey:kIsNightMode];
+    
+    if(isNightMode) {
+        self.nightModeView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        self.nightModeView.backgroundColor = [UIColor colorWithRed:0.23 green:0.23 blue:0.23 alpha:0.2];
+        self.nightModeView.userInteractionEnabled = NO;
+        [[UIApplication sharedApplication].keyWindow addSubview:self.nightModeView];
+    } else {
+        [self.nightModeView removeFromSuperview];
+        self.nightModeView = nil;
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setBool:isNightMode forKey:kIsNightMode];
+}
 
 #pragma mark - private methods
+- (void)initialization {
+    self.navigationController.hidesBarsOnSwipe = [[NSUserDefaults standardUserDefaults] boolForKey:kIsFullscreen]; //全屏模式
+    
+    BOOL isNightMode = [[NSUserDefaults standardUserDefaults] boolForKey:kIsNightMode];
+    if(isNightMode) {
+        self.nightModeView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        self.nightModeView.backgroundColor = [UIColor colorWithRed:0.23 green:0.23 blue:0.23 alpha:0.2];
+        self.nightModeView.userInteractionEnabled = NO;
+        [[UIApplication sharedApplication].keyWindow addSubview:self.nightModeView];
+    }
+}
 - (void)initializeWebView {
     WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
     self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
