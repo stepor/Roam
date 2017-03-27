@@ -1,5 +1,4 @@
 PODS:
-  - BHBPopView (1.2.0)
   - KVOController (1.2.0)
   - Masonry (1.0.2)
   - MBProgressHUD (1.0.0)
@@ -8,19 +7,17 @@ PODS:
   - SDWebImage/Core (3.8.2)
 
 DEPENDENCIES:
-  - BHBPopView
   - KVOController (~> 1.2.0)
   - Masonry (~> 1.0.2)
   - MBProgressHUD (~> 1.0.0)
   - SDWebImage (~> 3.8.2)
 
 SPEC CHECKSUMS:
-  BHBPopView: ea1c5a614e6bbbbc64c873d52fb1b5b60378cef0
   KVOController: d72ace34afea42468329623b3379ab3cd1d286b6
   Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
 
-PODFILE CHECKSUM: 2a2fc17fada9923cdc1e9c485ccce63a05987aa8
+PODFILE CHECKSUM: ee898ff3c9337a6c5b337b485a15d01b72d391c8
 
 COCOAPODS: 1.2.0.beta.1

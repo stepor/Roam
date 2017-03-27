@@ -12,8 +12,8 @@
 @interface WHPopView ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
-@property (copy, nonatomic) NSArray<NSString *> *images;
-@property (copy, nonatomic) NSArray<NSString *> *titles;
+@property (strong, nonatomic) NSMutableArray<NSString *> *images;
+@property (strong, nonatomic) NSMutableArray<NSString *> *titles;
 @property (copy, nonatomic) DidSelectedBlock selectedBlock;
 @property (copy, nonatomic) void (^showBlock)();
 @property (copy, nonatomic) void (^hideBblock)();
@@ -35,8 +35,8 @@ static NSString *const reuseID_itemCell = @"itemCell";
     view.clipsToBounds = YES;
     
     // images , title  , block
-    view.images = images;
-    view.titles = titles;
+    view.images = [NSMutableArray arrayWithArray:images];
+    view.titles = [NSMutableArray arrayWithArray:titles];
     view.selectedBlock = block;
     view.showBlock = showBlock;
     view.hideBblock = hideBlock;
@@ -46,11 +46,12 @@ static NSString *const reuseID_itemCell = @"itemCell";
     UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     CGFloat itemSize = CGRectGetWidth(view.bounds) / 4.0;
-    flowLayout.itemSize = CGSizeMake(itemSize, itemSize);
-    flowLayout.minimumLineSpacing = 0.0;
+    flowLayout.itemSize = CGSizeMake(itemSize, itemSize * 0.75);
+    flowLayout.minimumLineSpacing = 10.0;
     flowLayout.minimumInteritemSpacing = 0.0;
     
-    CGFloat height = ceil(view.images.count / 4.0) * itemSize;
+    CGFloat rows = ceil(view.images.count / 4.0);
+    CGFloat height = rows * itemSize * 0.75 + rows * flowLayout.minimumLineSpacing;
     CGFloat width = CGRectGetWidth(view.bounds);
     
     CGRect aFrame = CGRectMake(0.0, CGRectGetHeight(view.bounds), width, height);
@@ -91,7 +92,8 @@ static NSString *const reuseID_itemCell = @"itemCell";
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     
     ItemCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseID_itemCell forIndexPath:indexPath];
-    cell.iconImageView.image = [UIImage imageNamed:self.images[indexPath.row]];
+    UIImage *image = [UIImage imageNamed:self.images[indexPath.row]];
+    cell.iconImageView.image = image;
     cell.titleLabel.text = self.titles[indexPath.row];
     
     return cell;
@@ -120,6 +122,17 @@ static NSString *const reuseID_itemCell = @"itemCell";
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [self hide];
+}
+
+#pragma mark - Public methods
+- (void)updateTitle:(NSString *)title atIndex:(NSInteger)index {
+    [self.titles replaceObjectAtIndex:index withObject:title];
+    [self.collectionView reloadData];
+}
+
+- (void)updateImage:(NSString *)imageName atIndex:(NSInteger)index {
+    [self.images replaceObjectAtIndex:index withObject:imageName];
+    [self.collectionView reloadData];
 }
 
 @end

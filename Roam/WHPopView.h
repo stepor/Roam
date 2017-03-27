@@ -9,10 +9,14 @@
 #import <UIKit/UIKit.h>
 
 typedef void (^DidSelectedBlock)(NSInteger index);
+static NSString *const kIsFullscreen = @"isFullScreen";
 
 @interface WHPopView : UIView
 
 + (instancetype)showToView:(UIView *)superView inserts:(UIEdgeInsets)inserts images:(NSArray<NSString *> *)images titles:(NSArray<NSString *> *)titles showBlock:(void (^)())showBlock hideBlock:(void (^)())hideBlock selectedBlock:(DidSelectedBlock)block;
+
+- (void)updateTitle:(NSString *)title atIndex:(NSInteger)index;
+- (void)updateImage:(NSString *)imageName atIndex:(NSInteger)index;
 
 - (void)hide;
 @end

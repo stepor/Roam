@@ -10,7 +10,6 @@
 #import <WebKit/WebKit.h>
 #import <Masonry/Masonry.h>
 #import <KVOController/KVOController.h>
-#import <BHBPopView/BHBPopView.h>
 #import "WHPopView.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "Model+CoreDataModel.h"
@@ -41,6 +40,7 @@ typedef NS_ENUM(NSInteger, TagTextField) {
 @property (strong, nonatomic) UIButton *homeButton;
 @property (strong, nonatomic) UIButton *multiTaskButton;
 
+@property (strong, nonatomic) WHPopView *popView;
 @end
 
 @implementation MainViewController {
@@ -51,6 +51,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.navigationController.hidesBarsOnSwipe = [[NSUserDefaults standardUserDefaults] boolForKey:kIsFullscreen];
     [self configureToolBar];
     [self configureNavigationItem];
     [self initializeWebView];//webView
@@ -188,22 +189,23 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 - (void)menuButtonAction:(UIButton *)button {
     static BOOL show = NO;
-    static WHPopView *popView = nil;
     __weak typeof(self) weakSelf = self;
     if(!show) {
         show = YES;
         UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 0.0, 44.0, 0.0);
         
-        popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"bookmark", @"update", @"share", @"setting"] titles:@[@"添加书签", @"书签/历史", @"刷新" , @"分享", @"设置"] showBlock:^ {
+        BOOL isFullscreen = [[NSUserDefaults standardUserDefaults] boolForKey:kIsFullscreen];
+        NSString *title_f = isFullscreen ? @"关闭全屏" : @"开启全屏";
+        
+        self.popView = [WHPopView showToView:self.view inserts:insets images:@[@"collect", @"bookmark", @"update", @"share", @"setting", @"fullscreen"] titles:@[@"添加书签", @"书签/历史", @"刷新" , @"分享", @"设置", title_f] showBlock:^ {
             
         } hideBlock:^{
+            typeof(weakSelf) strongSelf = weakSelf;
             show = NO;
-            popView= nil;
+            strongSelf.popView= nil;
         } selectedBlock:^(NSInteger index) {
-            
             NSLog(@"seleted item at : %ld", index);
             typeof(weakSelf) strongSelf = weakSelf;
-            [popView hide];
             switch (index) {
                 case 0:
                     [strongSelf selectAddingBookmark];
@@ -215,14 +217,19 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
                     [strongSelf selectRefresh];
                     break;
                 case 3:
-                    [strongSelf showActivityViewController];
+                    [strongSelf selectShare];
+                    break;
+                case 5:
+                    [strongSelf selectFullscreen];
+                    break;
                 default:
                     break;
             }
+            [strongSelf.popView hide];
         
         }];
     } else {
-        [popView hide];
+        [self.popView hide];
     }
 }
 
@@ -308,6 +315,26 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     [self.webView reloadFromOrigin];
 }
 
+- (void)selectShare {
+    UIActivityViewController *activtyVC = [[UIActivityViewController alloc] initWithActivityItems:@[self.webView.URL] applicationActivities:nil];
+    [self presentViewController:activtyVC animated:YES completion:nil];
+}
+
+- (void)selectFullscreen {
+    BOOL isFullscreen = ![[NSUserDefaults standardUserDefaults] boolForKey:kIsFullscreen];
+    
+    self.navigationController.hidesBarsOnSwipe = isFullscreen;
+    if(self.popView) {
+        NSString *title = isFullscreen ? @"关闭全屏" : @"开启全屏";
+        
+        NSLog(@"title: %@", title);
+        
+        [self.popView updateTitle:title atIndex:5];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setBool:isFullscreen forKey:kIsFullscreen];
+}
+
 
 #pragma mark - private methods
 - (void)initializeWebView {
@@ -368,11 +395,11 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     
     UIBarButtonItem *flexibleItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
     
-    NSArray *items = @[backItem, forwardItem, menuItem, homeItem, multiTaskItem];
-    for(UIBarButtonItem *item in items) {
-        item.width = width;
-        
-    }
+//    NSArray *items = @[backItem, forwardItem, menuItem, homeItem, multiTaskItem];
+//    for(UIBarButtonItem *item in items) {
+//        item.width = width;
+//        
+//    }
     
     self.toolbarItems = @[backItem, flexibleItem, forwardItem, flexibleItem, menuItem, flexibleItem, homeItem, flexibleItem, multiTaskItem];
     
@@ -587,8 +614,5 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     }
 }
 
-- (void)showActivityViewController {
-    UIActivityViewController *activtyVC = [[UIActivityViewController alloc] initWithActivityItems:@[self.webView.URL] applicationActivities:nil];
-    [self presentViewController:activtyVC animated:YES completion:nil];
-}
+
 @end
