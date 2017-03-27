@@ -30,9 +30,8 @@ typedef NS_ENUM(NSInteger, TagTextField) {
 
 @property (strong, nonatomic) WKWebView *webView;
 //header view
-@property (weak, nonatomic) IBOutlet UIView *headerView;
-@property (weak, nonatomic) IBOutlet UITextField *searchTextField;
-@property (strong, nonatomic) UIButton *resignButton;
+@property (strong, nonatomic) UITextField *searchTextField;
+@property (strong, nonatomic) UIBarButtonItem *rightItem;
 @property (strong, nonatomic) UIProgressView *progressView;
 
 //menu
@@ -41,9 +40,6 @@ typedef NS_ENUM(NSInteger, TagTextField) {
 @property (strong, nonatomic) UIButton *menuButton;
 @property (strong, nonatomic) UIButton *homeButton;
 @property (strong, nonatomic) UIButton *multiTaskButton;
-
-//constraint
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *trailingOfSearchTextField;
 
 @end
 
@@ -55,14 +51,22 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self configureToolBar];
+    [self configureNavigationItem];
     [self initializeWebView];//webView
-    [self initializeResignButton];//resign button
-    [self setUpSearchTextField];//search text field
     [self initialProgressView];//progress view;
     [self setUpKVO];//KVO
     [self setUpConstraints];//constraint
+    
+    self.backButton.enabled = NO;
+    self.forwardButton.enabled = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    CGRect bounds = [UIScreen mainScreen].bounds;
+    NSLog(@"%f, %f", CGRectGetHeight(bounds), CGRectGetWidth(bounds));
+    NSLog(@"%@ : %@", self.view, self.webView);
 }
 
 - (void)didReceiveMemoryWarning {
@@ -116,13 +120,8 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 #pragma mark - <UITextFieldDelegate>
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     if(textField == self.searchTextField) {
-        CGFloat constant = self.trailingOfSearchTextField.constant;
         textField.text = [self.webView.URL absoluteString];
-        _offsetOfSearchTextFieldTrailing = CGRectGetWidth(self.resignButton.bounds) + constant;
-        self.trailingOfSearchTextField.constant += _offsetOfSearchTextFieldTrailing;
-        [UIView animateWithDuration:0.5 animations:^{
-            [self.headerView layoutIfNeeded];
-        }];
+        [self.navigationItem setRightBarButtonItem:self.rightItem animated:YES];
     }
     
     return YES;
@@ -131,10 +130,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
     if(textField == self.searchTextField) {
         textField.text = self.webView.title;
-        self.trailingOfSearchTextField.constant -= _offsetOfSearchTextFieldTrailing;
-        [UIView animateWithDuration:0.5 animations:^{
-            [self.headerView layoutIfNeeded];
-        }];
+        [self.navigationItem setRightBarButtonItem:nil animated:YES];
     }
     return YES;
 }
@@ -238,7 +234,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     NSLog(@"Touch on multi task button!");
 }
 
-- (void)resignButtonAction:(UIButton *)button {
+- (void)rightItemAction {
     [self.searchTextField resignFirstResponder];
 }
 
@@ -321,7 +317,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     self.webView.allowsBackForwardNavigationGestures = YES;
     self.webView.UIDelegate = self;
     self.webView.navigationDelegate = self;
-    self.webView.scrollView.contentInset = UIEdgeInsetsMake(0.0, 0.0, 50.0, 0.0);
+    //self.webView.scrollView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 44.0, 0.0);
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
 }
 
@@ -334,19 +330,19 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     CGRect buttonFrame = CGRectMake(0.0, 0.0, width, heigt);
     
     self.backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.backButton.enabled = NO;
     self.backButton.frame = buttonFrame;
     [self.backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     self.backButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [self.backButton addTarget:self action:@selector(backButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    self.backButton.enabled = NO;
     UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:self.backButton];
     
     self.forwardButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.forwardButton.enabled = NO;
     self.forwardButton.frame = buttonFrame;
     [self.forwardButton setImage:[UIImage imageNamed:@"forward"] forState:UIControlStateNormal];
     self.forwardButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [self.forwardButton addTarget:self action:@selector(forwardButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    self.forwardButton.enabled = NO;
     UIBarButtonItem *forwardItem = [[UIBarButtonItem alloc] initWithCustomView:self.forwardButton];
     
     self.menuButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -382,16 +378,17 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     
 }
 
-- (void)initializeResignButton {
-    self.resignButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.resignButton addTarget:self action:@selector(resignButtonAction:) forControlEvents:UIControlEventTouchUpInside];
-    [self.resignButton setTitle:@"取消" forState:UIControlStateNormal];
-    [self.headerView addSubview:self.resignButton];
+- (void)configureNavigationItem {
+    self.rightItem = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStylePlain target:self action:@selector(rightItemAction)];
+    [self setUpSearchTextField];
 }
 
 
 - (void)setUpSearchTextField {
     //textField
+    self.searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(0.0, 0.0, CGRectGetWidth([UIScreen mainScreen].bounds), 30.0)];
+    self.searchTextField.borderStyle = UITextBorderStyleRoundedRect;
+    self.navigationItem.titleView = self.searchTextField;
     self.searchTextField.delegate = self;
     self.searchTextField.returnKeyType = UIReturnKeySearch;
     self.searchTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
@@ -408,7 +405,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 - (void)initialProgressView {
     self.progressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
-    [self.headerView addSubview:self.progressView];
+    [self.view addSubview:self.progressView];
     self.progressView.progress = 0.0;
 }
 
@@ -468,25 +465,24 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (void)setUpConstraints {
+//    self.webView.translatesAutoresizingMaskIntoConstraints = NO;
+    id topGuide = self.topLayoutGuide;
+ //   id bottomGuide  = self.bottomLayoutGuide;
+//    NSDictionary *dic = NSDictionaryOfVariableBindings(_webView, topGuide, bottomGuide);
+//    NSArray  *constraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[to]" options:0 metrics:nil views:dic]
     [self.webView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.headerView.mas_bottom);
+        make.top.equalTo(self.view);
         make.left.equalTo(self.view);
         make.right.equalTo(self.view);
         make.bottom.equalTo(self.view);
     }];
     
-    [self.resignButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.searchTextField.mas_right).offset(8.0);
-        make.top.equalTo(self.searchTextField.mas_top);
-        make.bottom.equalTo(self.searchTextField.mas_bottom);
-        make.width.equalTo(@40.0);
-    }];
-    
+    NSDictionary *pDic = NSDictionaryOfVariableBindings(_progressView, topGuide);
+    NSArray *pConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[topGuide][_progressView(==1.0)]" options:0 metrics:nil views:pDic];
+    [self.progressView.superview addConstraints:pConstraints];
     [self.progressView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.headerView);
-        make.bottom.equalTo(self.headerView);
-        make.right.equalTo(self.headerView);
-        make.height.equalTo(@3.0);
+        make.left.equalTo(self.progressView.superview);
+        make.right.equalTo(self.progressView.superview);
     }];
 }
 
