@@ -7,9 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 
 @interface MainViewController : UIViewController
 
+- (WKWebView *)initializeWebView:(BOOL)isPrivate;
+- (NSArray<WKWebView *> *)webViews;
+- (NSArray<WKWebView *> *)privateWebViews;
 
 @end
 

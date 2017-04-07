@@ -27,6 +27,8 @@
 		D7F065531E8163030050B857 /* BookmarksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F065521E8163030050B857 /* BookmarksViewController.m */; };
 		D7F065571E8166C70050B857 /* BookmarkCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F065561E8166C70050B857 /* BookmarkCell.m */; };
 		D7F0655B1E83B64E0050B857 /* HistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F0655A1E83B64E0050B857 /* HistoryViewController.m */; };
+		D7F0655F1E971D6C0050B857 /* MultitaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F0655E1E971D6C0050B857 /* MultitaskViewController.m */; };
+		D7F065631E971DB70050B857 /* LineLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F065621E971DB70050B857 /* LineLayout.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,6 +87,10 @@
 		D7F065561E8166C70050B857 /* BookmarkCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BookmarkCell.m; sourceTree = "<group>"; };
 		D7F065591E83B64E0050B857 /* HistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HistoryViewController.h; path = HistoryViewController/HistoryViewController.h; sourceTree = "<group>"; };
 		D7F0655A1E83B64E0050B857 /* HistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HistoryViewController.m; path = HistoryViewController/HistoryViewController.m; sourceTree = "<group>"; };
+		D7F0655D1E971D6C0050B857 /* MultitaskViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MultitaskViewController.h; path = MultitaskViewController/MultitaskViewController.h; sourceTree = "<group>"; };
+		D7F0655E1E971D6C0050B857 /* MultitaskViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MultitaskViewController.m; path = MultitaskViewController/MultitaskViewController.m; sourceTree = "<group>"; };
+		D7F065611E971DB70050B857 /* LineLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LineLayout.h; path = MultitaskViewController/LineLayout/LineLayout.h; sourceTree = "<group>"; };
+		D7F065621E971DB70050B857 /* LineLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LineLayout.m; path = MultitaskViewController/LineLayout/LineLayout.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +163,7 @@
 		D7CA2AB21E690A44003B138C /* Roam */ = {
 			isa = PBXGroup;
 			children = (
+				D7F0655C1E971D210050B857 /* MultitaskViewController */,
 				D7F065581E83B5FC0050B857 /* HistoryViewController */,
 				D7F0654D1E8162B20050B857 /* BookmarksViewController */,
 				D7F065491E7CD8690050B857 /* SegmentViewController */,
@@ -276,6 +283,25 @@
 				D7F0655A1E83B64E0050B857 /* HistoryViewController.m */,
 			);
 			name = HistoryViewController;
+			sourceTree = "<group>";
+		};
+		D7F0655C1E971D210050B857 /* MultitaskViewController */ = {
+			isa = PBXGroup;
+			children = (
+				D7F065601E971D750050B857 /* LineLayout */,
+				D7F0655D1E971D6C0050B857 /* MultitaskViewController.h */,
+				D7F0655E1E971D6C0050B857 /* MultitaskViewController.m */,
+			);
+			name = MultitaskViewController;
+			sourceTree = "<group>";
+		};
+		D7F065601E971D750050B857 /* LineLayout */ = {
+			isa = PBXGroup;
+			children = (
+				D7F065611E971DB70050B857 /* LineLayout.h */,
+				D7F065621E971DB70050B857 /* LineLayout.m */,
+			);
+			name = LineLayout;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -468,8 +494,10 @@
 				D7F064F11E716F4D0050B857 /* ItemCell.m in Sources */,
 				D7F065531E8163030050B857 /* BookmarksViewController.m in Sources */,
 				D7CA2ABB1E690A44003B138C /* MainViewController.m in Sources */,
+				D7F0655F1E971D6C0050B857 /* MultitaskViewController.m in Sources */,
 				D7CA2AB81E690A44003B138C /* AppDelegate.m in Sources */,
 				D7F065481E7A8C1E0050B857 /* Model.xcdatamodeld in Sources */,
+				D7F065631E971DB70050B857 /* LineLayout.m in Sources */,
 				D7F0653B1E7792C90050B857 /* WHDialogViewController.m in Sources */,
 				D7F0655B1E83B64E0050B857 /* HistoryViewController.m in Sources */,
 				D7CA2AB51E690A44003B138C /* main.m in Sources */,

@@ -7,7 +7,6 @@
 //
 
 #import "MainViewController.h"
-#import <WebKit/WebKit.h>
 #import <Masonry/Masonry.h>
 #import <KVOController/KVOController.h>
 #import "WHPopView.h"
@@ -18,6 +17,7 @@
 #import "SegmentViewController.h"
 #import "BookmarksViewController.h"
 #import "HIstoryViewController.h"
+#import "MultitaskViewController.h"
 
 static NSString *const kIsNightMode = @"isNightMode";
 
@@ -29,7 +29,10 @@ typedef NS_ENUM(NSInteger, TagTextField) {
 
 @interface MainViewController ()<WKNavigationDelegate, WKUIDelegate, UITextFieldDelegate, SegmentViewControllerDelegate>
 
-@property (strong, nonatomic) WKWebView *webView;
+@property (strong, nonatomic) WKWebView *currentWebView;
+@property (strong, nonatomic) NSMutableArray<WKWebView *> *webViews_p;
+@property (strong, nonatomic) NSMutableArray<WKWebView *> *privateWebViews_p;
+
 //header view
 @property (strong, nonatomic) UITextField *searchTextField;
 @property (strong, nonatomic) UIBarButtonItem *rightItem;
@@ -47,18 +50,18 @@ typedef NS_ENUM(NSInteger, TagTextField) {
 @property (strong, nonatomic) UIView *nightModeView;
 @end
 
-@implementation MainViewController {
-    CGFloat _offsetOfSearchTextFieldTrailing;
-}
+@implementation MainViewController
 
 static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851a&word=";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.webViews_p = [NSMutableArray array];
+    self.privateWebViews_p = [NSMutableArray array];
     [self initialization];
     [self configureToolBar];
     [self configureNavigationItem];
-    [self initializeWebView];//webView
+    [self configureWebView];//webView
     [self initialProgressView];//progress view;
     [self setUpKVO];//KVO
     [self setUpConstraints];//constraint
@@ -69,9 +72,6 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    CGRect bounds = [UIScreen mainScreen].bounds;
-    NSLog(@"%f, %f", CGRectGetHeight(bounds), CGRectGetWidth(bounds));
-    NSLog(@"%@ : %@", self.view, self.webView);
 }
 
 - (void)didReceiveMemoryWarning {
@@ -83,6 +83,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     decisionHandler(WKNavigationActionPolicyAllow);
     NSLog(@"%s", __func__);
+    NSLog(@"navigation : %@", navigationAction);
 }
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(null_unspecified WKNavigation *)navigation {
@@ -122,10 +123,21 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     NSLog(@"%@", error);
 }
 
+#pragma mark - <WKUIDelegate>
+- (nullable WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+    
+    
+    
+    NSLog(@"%s", __func__);
+    return nil;
+}
+
+
+
 #pragma mark - <UITextFieldDelegate>
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     if(textField == self.searchTextField) {
-        textField.text = [self.webView.URL absoluteString];
+        textField.text = [self.currentWebView.URL absoluteString];
         [self.navigationItem setRightBarButtonItem:self.rightItem animated:YES];
     }
     
@@ -134,7 +146,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 - (BOOL)textFieldShouldEndEditing:(UITextField *)textField {
     if(textField == self.searchTextField) {
-        textField.text = self.webView.title;
+        textField.text = self.currentWebView.title;
         [self.navigationItem setRightBarButtonItem:nil animated:YES];
     }
     return YES;
@@ -155,11 +167,11 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if(textField == self.searchTextField) {
         if([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:textField.text]]) {
-            [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:textField.text]]];
+            [self.currentWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:textField.text]]];
         } else {
-            [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"baidu.com"]]];
+            [self.currentWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"baidu.com"]]];
             NSString *searchStr = [[prefixSearchString stringByAppendingString:textField.text] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-                [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:searchStr]]];
+                [self.currentWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:searchStr]]];
         }
     }
     [textField resignFirstResponder];
@@ -183,11 +195,11 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 #pragma mark - Button Action
 - (void)backButtonAction:(UIButton *)button {
-    [self.webView goBack];
+    [self.currentWebView goBack];
 }
 
 - (void)forwardButtonAction:(UIButton *)button {
-    [self.webView goForward];
+    [self.currentWebView goForward];
 }
 
 
@@ -246,11 +258,13 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (void)homeButtonAction:(UIButton *)button {
-    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
+    [self.currentWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
 }
 
 - (void)multiTaskButtonAction:(UIButton *)button {
-    NSLog(@"Touch on multi task button!");
+    MultitaskViewController *multitaskVC = [[MultitaskViewController alloc] init];
+    multitaskVC.view.backgroundColor = [UIColor redColor];
+    [self presentViewController:multitaskVC animated:YES completion:nil];
 }
 
 - (void)rightItemAction {
@@ -258,8 +272,8 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (void)rightViewButtonAction:(UIButton *)button {
-    if(self.webView.isLoading) {
-        [self.webView stopLoading];
+    if(self.currentWebView.isLoading) {
+        [self.currentWebView stopLoading];
     }
 }
 
@@ -276,7 +290,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     }
     if(arr.count > 0) {//如果当前页面已经存在标签中，提示用户
         for(WebViewInfo *info in arr) {
-            if([info.urlString isEqualToString:self.webView.URL.absoluteString]) {
+            if([info.urlString isEqualToString:self.currentWebView.URL.absoluteString]) {
                 MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
                 hud.removeFromSuperViewOnHide = YES;
                 hud.mode = MBProgressHUDModeText;
@@ -296,11 +310,11 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 - (void)selectBookmarksAndHistory {
 // bookmark view controller
     BookmarksViewController *bookMarkVC = [[BookmarksViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    bookMarkVC.currentWebView = self.webView;
+    bookMarkVC.currentWebView = self.currentWebView;
     bookMarkVC.navigationItem.title = @"书签";
 // history view controller
     HistoryViewController *histortyVC = [[HistoryViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    histortyVC.currentWebView = self.webView;
+    histortyVC.currentWebView = self.currentWebView;
     histortyVC.title = @"历史";
 // segment view controller
     SegmentViewController *segmentVC = [[SegmentViewController alloc] initWithViewControllers:@[bookMarkVC, histortyVC]];
@@ -324,11 +338,11 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (void)selectRefresh {
-    [self.webView reloadFromOrigin];
+    [self.currentWebView reloadFromOrigin];
 }
 
 - (void)selectShare {
-    UIActivityViewController *activtyVC = [[UIActivityViewController alloc] initWithActivityItems:@[self.webView.URL] applicationActivities:nil];
+    UIActivityViewController *activtyVC = [[UIActivityViewController alloc] initWithActivityItems:@[self.currentWebView.URL] applicationActivities:nil];
     [self presentViewController:activtyVC animated:YES completion:nil];
 }
 
@@ -360,6 +374,37 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     [[NSUserDefaults standardUserDefaults] setBool:isNightMode forKey:kIsNightMode];
 }
 
+#pragma mark - public methods 
+- (WKWebView *)initializeWebView:(BOOL)isPrivate {
+    
+    if(isPrivate) {
+        return nil;
+    } else {
+        WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
+        configuration.allowsInlineMediaPlayback = YES;
+        configuration.allowsAirPlayForMediaPlayback = YES;
+        configuration.allowsPictureInPictureMediaPlayback = YES;
+        configuration.mediaPlaybackRequiresUserAction = NO;
+        configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
+        
+        WKWebView *webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
+        webView.allowsBackForwardNavigationGestures = YES;
+        webView.UIDelegate = self;
+        webView.navigationDelegate = self;
+        
+        [self.webViews_p addObject:webView];
+        return webView;
+    }
+}
+
+- (NSArray<WKWebView *> *)webViews {
+    return [self.webViews_p copy];
+}
+
+- (NSArray<WKWebView *> *)privateWebViews {
+    return [self.privateWebViews copy];
+}
+
 #pragma mark - private methods
 - (void)initialization {
     self.navigationController.hidesBarsOnSwipe = [[NSUserDefaults standardUserDefaults] boolForKey:kIsFullscreen]; //全屏模式
@@ -372,15 +417,10 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         [[UIApplication sharedApplication].keyWindow addSubview:self.nightModeView];
     }
 }
-- (void)initializeWebView {
-    WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
-    self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
-    [self.view addSubview:self.webView];
-    self.webView.allowsBackForwardNavigationGestures = YES;
-    self.webView.UIDelegate = self;
-    self.webView.navigationDelegate = self;
-    //self.webView.scrollView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 44.0, 0.0);
-    [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
+- (void)configureWebView {
+    self.currentWebView = [self initializeWebView:NO];
+    [self.view addSubview:self.currentWebView];
+    [self.currentWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
 }
 
 - (void)configureToolBar {
@@ -477,19 +517,19 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     self.KVOController = kvoController;
     __weak typeof(self) weakSelf = self;
     
-    [self.KVOController observe:self.webView keyPath:@"canGoBack" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+    [self.KVOController observe:self.currentWebView keyPath:@"canGoBack" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
         typeof(weakSelf) strongSelf = weakSelf;
         NSNumber *num = (NSNumber *)change[NSKeyValueChangeNewKey];
         strongSelf.backButton.enabled = num.boolValue;
     }];
-    [self.KVOController observe:self.webView keyPath:@"canGoForward" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+    [self.KVOController observe:self.currentWebView keyPath:@"canGoForward" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
         typeof(weakSelf) strongSelf = weakSelf;
         NSNumber *num = (NSNumber *)change[NSKeyValueChangeNewKey];
         strongSelf.forwardButton.enabled = num.boolValue;
     }];
     
     //about progress view and text field right view , history as well
-    [self.KVOController observe:self.webView keyPath:@"loading" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+    [self.KVOController observe:self.currentWebView keyPath:@"loading" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
         
         typeof(weakSelf) strongSelf = weakSelf;
         NSNumber *num = (NSNumber *)change[NSKeyValueChangeNewKey];
@@ -502,7 +542,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
             strongSelf.searchTextField.rightViewMode = UITextFieldViewModeNever; //text field right view
         }
     }];
-    [self.KVOController observe:self.webView keyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+    [self.KVOController observe:self.currentWebView keyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
         typeof(weakSelf) strongSelf  = weakSelf;
         if(strongSelf.progressView.isHidden) {
             return;
@@ -515,12 +555,12 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     }];
     
     // observe web view title
-    [self.KVOController observe:self.webView keyPath:@"title" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+    [self.KVOController observe:self.currentWebView keyPath:@"title" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
         typeof(weakSelf) strongSelf = weakSelf;
         strongSelf.searchTextField.text = change[NSKeyValueChangeNewKey];
         
         //检查当前页面是否应该加入历史记录
-        if(self.webView.title.length > 2) {
+        if(self.currentWebView.title.length > 2) {
             [strongSelf addCurrentWebViewToHistory];
         }
     }];
@@ -532,7 +572,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
  //   id bottomGuide  = self.bottomLayoutGuide;
 //    NSDictionary *dic = NSDictionaryOfVariableBindings(_webView, topGuide, bottomGuide);
 //    NSArray  *constraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[to]" options:0 metrics:nil views:dic]
-    [self.webView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.currentWebView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view);
         make.left.equalTo(self.view);
         make.right.equalTo(self.view);
@@ -577,7 +617,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     [alert addAction:action1];
     [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         typeof(weakSelf) strongSelf = weakSelf;
-        textField.text = strongSelf.webView.title;
+        textField.text = strongSelf.currentWebView.title;
         textField.tag = TagTextFieldTitle;
         //textField.delegate = strongSelf;
         UIImageView *iconView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 18.0, 18.0)];
@@ -595,7 +635,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         typeof(weakSelf) strongSelf = weakSelf;
         textField.tag = TagTextFieldURLString;
         //textField.delegate = strongSelf;
-        textField.text = strongSelf.webView.URL.absoluteString;
+        textField.text = strongSelf.currentWebView.URL.absoluteString;
         textField.enabled = NO;
     }];
     [self presentViewController:alert animated:YES completion:^{
@@ -606,7 +646,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (NSString *)iconURLString {
-    NSString *absoluteStr = self.webView.URL.absoluteString;
+    NSString *absoluteStr = self.currentWebView.URL.absoluteString;
     NSInteger toIndex = 0;
     NSInteger count  = 3;
     
@@ -624,7 +664,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (void)addCurrentWebViewToHistory {
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K MATCHES %@ && isHistory == YES",@"title", self.webView.title];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K MATCHES %@ && isHistory == YES",@"title", self.currentWebView.title];
     NSFetchRequest *fetchRequest = [WebViewInfo fetchRequest];
     fetchRequest.predicate = predicate;
     NSError *error  = nil;
@@ -642,9 +682,9 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     } else {
         WebViewInfo *info = [NSEntityDescription insertNewObjectForEntityForName:@"WebViewInfo" inManagedObjectContext:[CoreDataHelper shareInstance].context];
         info.isHistory = YES;
-        info.title = self.webView.title;
+        info.title = self.currentWebView.title;
         info.imageUrlString = [self iconURLString];
-        info.urlString = self.webView.URL.absoluteString;
+        info.urlString = self.currentWebView.URL.absoluteString;
         info.date = [NSDate date];
     }
 }
