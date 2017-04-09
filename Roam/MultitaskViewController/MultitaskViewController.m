@@ -10,6 +10,7 @@
 #import <Masonry/Masonry.h>
 #import "LineLayout.h"
 #import "WebViewCell.h"
+#import "WebViewManager.h"
 
 
 static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController";
@@ -48,13 +49,12 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-
-    return 0;
+    return [WebViewManager shareInstance].webViewControllers.count;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     WebViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuse_ID forIndexPath:indexPath];
-    
+    [cell setDisplayView:[WebViewManager shareInstance].webViewControllers[indexPath.row].snapshotView];
     return cell;
 }
 
@@ -70,7 +70,7 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
     [self.view addSubview:self.collectionView];
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
-    self.collectionView.backgroundColor = [UIColor greenColor];
+    self.collectionView.backgroundColor = [UIColor blackColor];
     [self.collectionView registerClass:[WebViewCell class] forCellWithReuseIdentifier:reuse_ID];
 }
 
@@ -115,6 +115,9 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 }
 
 - (void)addItemAction {
+    WebViewController *webViewVC = [[WebViewManager shareInstance] produceWebViewController:NO];
+    UINavigationController *navi = (UINavigationController *)self.presentingViewController;
+    [navi pushViewController:webViewVC animated:NO];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 

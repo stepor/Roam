@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		79C55A619D6768BB869EE101 /* Pods_Roam.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0483571199241373B49CCFBA /* Pods_Roam.framework */; };
+		D78FC30F1E9A201900D5EF2B /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D78FC30E1E9A201900D5EF2B /* RootViewController.m */; };
 		D7CA2AB51E690A44003B138C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2AB41E690A44003B138C /* main.m */; };
 		D7CA2AB81E690A44003B138C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2AB71E690A44003B138C /* AppDelegate.m */; };
 		D7CA2ABB1E690A44003B138C /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2ABA1E690A44003B138C /* WebViewController.m */; };
@@ -54,6 +55,8 @@
 		0483571199241373B49CCFBA /* Pods_Roam.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Roam.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		82686AAB57F448526042A93C /* Pods-Roam.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Roam.release.xcconfig"; path = "Pods/Target Support Files/Pods-Roam/Pods-Roam.release.xcconfig"; sourceTree = "<group>"; };
 		8E548D499CDE5C0D2559F5FD /* Pods-Roam.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Roam.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Roam/Pods-Roam.debug.xcconfig"; sourceTree = "<group>"; };
+		D78FC30D1E9A201900D5EF2B /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RootViewController.h; path = RootViewController/RootViewController.h; sourceTree = "<group>"; };
+		D78FC30E1E9A201900D5EF2B /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RootViewController.m; path = RootViewController/RootViewController.m; sourceTree = "<group>"; };
 		D7CA2AB01E690A44003B138C /* Roam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Roam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CA2AB41E690A44003B138C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D7CA2AB61E690A44003B138C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -144,6 +147,15 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		D78FC3091E9A1FE700D5EF2B /* RootViewController */ = {
+			isa = PBXGroup;
+			children = (
+				D78FC30D1E9A201900D5EF2B /* RootViewController.h */,
+				D78FC30E1E9A201900D5EF2B /* RootViewController.m */,
+			);
+			name = RootViewController;
+			sourceTree = "<group>";
+		};
 		D7CA2AA71E690A44003B138C = {
 			isa = PBXGroup;
 			children = (
@@ -169,6 +181,7 @@
 		D7CA2AB21E690A44003B138C /* Roam */ = {
 			isa = PBXGroup;
 			children = (
+				D78FC3091E9A1FE700D5EF2B /* RootViewController */,
 				D7F0656F1E9A11340050B857 /* WebViewsManager */,
 				D7F0655C1E971D210050B857 /* MultitaskViewController */,
 				D7F065581E83B5FC0050B857 /* HistoryViewController */,
@@ -528,6 +541,7 @@
 				D7F0656E1E9884150050B857 /* WebViewCell.m in Sources */,
 				D7F0655B1E83B64E0050B857 /* HistoryViewController.m in Sources */,
 				D7CA2AB51E690A44003B138C /* main.m in Sources */,
+				D78FC30F1E9A201900D5EF2B /* RootViewController.m in Sources */,
 				D7F064EC1E7146BC0050B857 /* WHPopView.m in Sources */,
 				D7F065571E8166C70050B857 /* BookmarkCell.m in Sources */,
 				D7F065421E7A3C910050B857 /* CoreDataHelper.m in Sources */,

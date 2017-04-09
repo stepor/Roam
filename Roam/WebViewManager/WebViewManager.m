@@ -43,5 +43,23 @@
 }
 
 
+#pragma mark - public
+- (WebViewController *)produceWebViewController:(BOOL)isPrivate {
+    WebViewController *vc = [[WebViewController alloc] initWithPrivate:isPrivate];
+    if(isPrivate) {
+        [_privateWebViewConstrollers addObject:vc];
+    } else {
+        [_webViewControllers addObject:vc];
+    }
+    return vc;
+}
+
+- (NSArray<WebViewController *> *)webViewControllers {
+    return [_webViewControllers copy];
+}
+
+- (NSArray<WebViewController *> *)privateWebViewControllers {
+    return [_privateWebViewConstrollers copy];
+}
 
 @end

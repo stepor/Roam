@@ -13,8 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface WebViewController : UIViewController
 
-
-- (WKWebView *)initializeWebView:(BOOL)isPrivate;
+- (instancetype)initWithPrivate:(BOOL)isPrivate;
+@property (assign, nonatomic, readonly) BOOL isPrivate;
+@property (strong, nonatomic, readonly) UIView *snapshotView;
 
 @end
 

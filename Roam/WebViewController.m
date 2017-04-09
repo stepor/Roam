@@ -21,7 +21,6 @@
 
 static NSString *const kIsNightMode = @"isNightMode";
 
-
 typedef NS_ENUM(NSInteger, TagTextField) {
     TagTextFieldTitle = 0,
     TagTextFieldURLString = 1
@@ -52,12 +51,23 @@ typedef NS_ENUM(NSInteger, TagTextField) {
 
 static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851a&word=";
 
+#pragma mark - init method
+- (instancetype)initWithPrivate:(BOOL)isPrivate {
+    self = [super init];
+    if(self) {
+        _isPrivate = isPrivate;
+    }
+    return self;
+}
+
+#pragma mark - Life cycle
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.navigationItem setHidesBackButton:YES];
     [self initialization];
     [self configureToolBar];
     [self configureNavigationItem];
-    [self configureFirstWebView];//webView
+    [self configureWebView];//webView
     [self initialProgressView];//progress view;
     [self setUpKVO];//KVO
     [self setUpConstraints];//constraint
@@ -66,9 +76,9 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     self.forwardButton.enabled = NO;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    _snapshotView = [self.navigationController.view snapshotViewAfterScreenUpdates:YES];
 }
 
 #pragma mark - <WKNavigationDelegate>
@@ -385,8 +395,8 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     }
 }
 
-- (void)configureFirstWebView {
-    self.webView = [self initializeWebView:NO];
+- (void)configureWebView {
+    self.webView = [self initializeWebView:_isPrivate];
     [self.view addSubview:self.webView];
     __weak typeof(self) weakSelf = self;
     [self.webView mas_makeConstraints:^(MASConstraintMaker *make) {
