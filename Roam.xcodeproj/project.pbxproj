@@ -29,6 +29,7 @@
 		D7F0655B1E83B64E0050B857 /* HistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F0655A1E83B64E0050B857 /* HistoryViewController.m */; };
 		D7F0655F1E971D6C0050B857 /* MultitaskViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F0655E1E971D6C0050B857 /* MultitaskViewController.m */; };
 		D7F065631E971DB70050B857 /* LineLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F065621E971DB70050B857 /* LineLayout.m */; };
+		D7F0656E1E9884150050B857 /* WebViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D7F0656D1E9884150050B857 /* WebViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +92,8 @@
 		D7F0655E1E971D6C0050B857 /* MultitaskViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MultitaskViewController.m; path = MultitaskViewController/MultitaskViewController.m; sourceTree = "<group>"; };
 		D7F065611E971DB70050B857 /* LineLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LineLayout.h; path = MultitaskViewController/LineLayout/LineLayout.h; sourceTree = "<group>"; };
 		D7F065621E971DB70050B857 /* LineLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LineLayout.m; path = MultitaskViewController/LineLayout/LineLayout.m; sourceTree = "<group>"; };
+		D7F0656C1E9884150050B857 /* WebViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebViewCell.h; path = MultitaskViewController/WebViewCell/WebViewCell.h; sourceTree = "<group>"; };
+		D7F0656D1E9884150050B857 /* WebViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebViewCell.m; path = MultitaskViewController/WebViewCell/WebViewCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -288,6 +291,7 @@
 		D7F0655C1E971D210050B857 /* MultitaskViewController */ = {
 			isa = PBXGroup;
 			children = (
+				D7F0656B1E9883E90050B857 /* WebViewCell */,
 				D7F065601E971D750050B857 /* LineLayout */,
 				D7F0655D1E971D6C0050B857 /* MultitaskViewController.h */,
 				D7F0655E1E971D6C0050B857 /* MultitaskViewController.m */,
@@ -302,6 +306,15 @@
 				D7F065621E971DB70050B857 /* LineLayout.m */,
 			);
 			name = LineLayout;
+			sourceTree = "<group>";
+		};
+		D7F0656B1E9883E90050B857 /* WebViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				D7F0656C1E9884150050B857 /* WebViewCell.h */,
+				D7F0656D1E9884150050B857 /* WebViewCell.m */,
+			);
+			name = WebViewCell;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -499,6 +512,7 @@
 				D7F065481E7A8C1E0050B857 /* Model.xcdatamodeld in Sources */,
 				D7F065631E971DB70050B857 /* LineLayout.m in Sources */,
 				D7F0653B1E7792C90050B857 /* WHDialogViewController.m in Sources */,
+				D7F0656E1E9884150050B857 /* WebViewCell.m in Sources */,
 				D7F0655B1E83B64E0050B857 /* HistoryViewController.m in Sources */,
 				D7CA2AB51E690A44003B138C /* main.m in Sources */,
 				D7F064EC1E7146BC0050B857 /* WHPopView.m in Sources */,

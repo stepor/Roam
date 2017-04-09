@@ -263,6 +263,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 - (void)multiTaskButtonAction:(UIButton *)button {
     MultitaskViewController *multitaskVC = [[MultitaskViewController alloc] init];
+    multitaskVC.mainViewController = self;
     multitaskVC.view.backgroundColor = [UIColor redColor];
     [self presentViewController:multitaskVC animated:YES completion:nil];
 }
@@ -403,6 +404,27 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 - (NSArray<WKWebView *> *)privateWebViews {
     return [self.privateWebViews copy];
+}
+
+- (void)removeWebView:(WKWebView *)webView {
+    if(self.webViews_p && self.webViews_p.count > 0) {
+        [self.webViews_p removeObject:webView];
+    }
+}
+- (void)removeWebViewAtIndex:(NSUInteger)index {
+    if(self.webViews_p && self.webViews_p.count > 0) {
+        [self.webViews_p removeObjectAtIndex:index];
+    }
+}
+- (void)removePrivateWebView:(WKWebView *)privateWebView {
+    if(self.privateWebViews_p && self.privateWebViews_p.count > 0) {
+        [self.privateWebViews_p removeObject:privateWebView];
+    }
+}
+- (void)removePrivateWebViewAtIndex:(NSUInteger)index {
+    if(self.privateWebViews_p && self.privateWebViews_p.count > 0) {
+        [self.privateWebViews_p removeObjectAtIndex:index];
+    }
 }
 
 #pragma mark - private methods

@@ -95,7 +95,7 @@
 #import "LineLayout.h"
 
 
-#define ITEM_SIZE 200.0
+//#define ITEM_SIZE 200.0
 #define ACTIVE_DISTANCE 200
 #define ZOOM_FACTOR 0.4
 
@@ -121,7 +121,7 @@
         CGFloat bottom = top;
         self.sectionInset = UIEdgeInsetsMake(top, sideDistance, bottom, sideDistance);
         //  每个item在水平方向的最小间距
-        self.minimumLineSpacing = ITEM_SIZE/4;
+        self.minimumLineSpacing = 50.0;
         
     }
     return self;
@@ -134,26 +134,26 @@
 }
 
 //  初始的layout外观将由该方法返回的UICollctionViewLayoutAttributes来决定
--(NSArray*)layoutAttributesForElementsInRect:(CGRect)rect
-{
-    NSArray* array = [super layoutAttributesForElementsInRect:rect];
-    CGRect visibleRect;
-    visibleRect.origin = self.collectionView.contentOffset;
-    visibleRect.size = self.collectionView.bounds.size;
-    
-    for (UICollectionViewLayoutAttributes* attributes in array) {
-        if (CGRectIntersectsRect(attributes.frame, rect)) {
-            CGFloat distance = CGRectGetMidX(visibleRect) - attributes.center.x;
-            CGFloat normalizedDistance = distance / ACTIVE_DISTANCE;
-            if (ABS(distance) < ACTIVE_DISTANCE) {
-                CGFloat zoom = 1 + ZOOM_FACTOR*(1 - ABS(normalizedDistance));
-                attributes.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);
-                attributes.zIndex = 1;
-            }
-        }
-    }
-    return array;
-}
+//-(NSArray*)layoutAttributesForElementsInRect:(CGRect)rect
+//{
+//    NSArray* array = [super layoutAttributesForElementsInRect:rect];
+//    CGRect visibleRect;
+//    visibleRect.origin = self.collectionView.contentOffset;
+//    visibleRect.size = self.collectionView.bounds.size;
+//    
+//    for (UICollectionViewLayoutAttributes* attributes in array) {
+//        if (CGRectIntersectsRect(attributes.frame, rect)) {
+//            CGFloat distance = CGRectGetMidX(visibleRect) - attributes.center.x;
+//            CGFloat normalizedDistance = distance / ACTIVE_DISTANCE;
+//            if (ABS(distance) < ACTIVE_DISTANCE) {
+//                CGFloat zoom = 1 + ZOOM_FACTOR*(1 - ABS(normalizedDistance));
+//                attributes.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);
+//                attributes.zIndex = 1;
+//            }
+//        }
+//    }
+//    return array;
+//}
 
 //  自动对齐到网格
 - (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity

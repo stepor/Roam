@@ -9,11 +9,12 @@
 #import "MultitaskViewController.h"
 #import <Masonry/Masonry.h>
 #import "LineLayout.h"
+#import "WebViewCell.h"
 
 
 static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController";
 
-@interface MultitaskViewController ()<UICollectionViewDelegate, UICollectionViewDataSource>
+@interface MultitaskViewController ()<UICollectionViewDelegate, UICollectionViewDataSource, WebViewCellDelegate>
 
 @property (strong, nonatomic) UIToolbar *toolbar;
 @property (strong, nonatomic) UICollectionView *collectionView;
@@ -43,25 +44,35 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if(self.mainViewController) {
+        NSLog(@"webViews.count : %lu", self.mainViewController.webViews.count);
         return self.mainViewController.webViews.count;
     }
     return 0;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuse_ID forIndexPath:indexPath];
+    WebViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuse_ID forIndexPath:indexPath];
     
+    UIView *snapshotView = [self.mainViewController.webViews[indexPath.row] snapshotViewAfterScreenUpdates:YES];
+    [cell setDisplayView:snapshotView];
+    cell.delegate = self;
     return cell;
+}
+
+#pragma mark - <WebViewCellDelegate> 
+- (void)WebViewCellDidSelectRomove:(WebViewCell *)webViewCell {
+    NSLog(@"web view cell delegate!");
 }
 
 #pragma mark - initialize
 - (void)initializeCollectionView {
     LineLayout *layout = [LineLayout new];
-    self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+    self.collectionView = [[UICollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:layout];
     [self.view addSubview:self.collectionView];
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:reuse_ID];
+    self.collectionView.backgroundColor = [UIColor greenColor];
+    [self.collectionView registerClass:[WebViewCell class] forCellWithReuseIdentifier:reuse_ID];
 }
 
 - (void)setUpToolBar {
@@ -72,7 +83,7 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
     
     UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@"关闭全部" style:UIBarButtonItemStylePlain target:self action:@selector(closeItemAction)];
     
-    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(doneItemAction)];
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addItemAction)];
     
     UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStylePlain target:self action:@selector(doneItemAction)];
     
@@ -89,9 +100,11 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
         make.left.right.and.bottom.equalTo(strongSelf.toolbar.superview);
         make.height.equalTo(@44.0);
     }];
+    
+    
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         typeof(weakSelf) strongSelf = weakSelf;
-        make.top.left.and.right.equalTo(strongSelf.collectionView.superview);
+        make.left.right.and.top.equalTo(strongSelf.collectionView.superview);
         make.bottom.equalTo(strongSelf.toolbar.mas_top);
         
     }];
@@ -112,3 +125,7 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 
 
 @end
+
+
+
+
