@@ -61,7 +61,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     [self initialization];
     [self configureToolBar];
     [self configureNavigationItem];
-    [self configureWebView];//webView
+    [self configureFirstWebView];//webView
     [self initialProgressView];//progress view;
     [self setUpKVO];//KVO
     [self setUpConstraints];//constraint
@@ -70,8 +70,13 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     self.forwardButton.enabled = NO;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    NSMutableArray *mArr = [NSMutableArray array];
+    for(WKWebView *webView in self.webViews) {
+        [mArr addObject:[webView snapshotViewAfterScreenUpdates:NO]];
+    }
+    _snapshotViews = [mArr copy];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -376,6 +381,19 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 #pragma mark - public methods 
+- (void)displayNewWebView:(BOOL)isPrivate {
+    if(isPrivate) {
+        
+    } else {
+        self.currentWebView = [self initializeWebView:NO];
+        [self.view addSubview:self.currentWebView];
+        __weak typeof(self) weakSelf = self;
+        [self.currentWebView mas_makeConstraints:^(MASConstraintMaker *make) {
+            __strong typeof(weakSelf) strongSelf = weakSelf;
+            make.edges.equalTo(strongSelf.view);
+        }];
+    }
+}
 - (WKWebView *)initializeWebView:(BOOL)isPrivate {
     
     if(isPrivate) {
@@ -392,8 +410,9 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         webView.allowsBackForwardNavigationGestures = YES;
         webView.UIDelegate = self;
         webView.navigationDelegate = self;
-        
+        [webView  loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
         [self.webViews_p addObject:webView];
+        
         return webView;
     }
 }
@@ -439,10 +458,15 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         [[UIApplication sharedApplication].keyWindow addSubview:self.nightModeView];
     }
 }
-- (void)configureWebView {
+
+- (void)configureFirstWebView {
     self.currentWebView = [self initializeWebView:NO];
     [self.view addSubview:self.currentWebView];
-    [self.currentWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
+    __weak typeof(self) weakSelf = self;
+    [self.currentWebView mas_makeConstraints:^(MASConstraintMaker *make) {
+        typeof(weakSelf) strongSelf = weakSelf;
+        make.edges.equalTo(strongSelf.view);
+    }];
 }
 
 - (void)configureToolBar {
@@ -589,18 +613,8 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (void)setUpConstraints {
-//    self.webView.translatesAutoresizingMaskIntoConstraints = NO;
+
     id topGuide = self.topLayoutGuide;
- //   id bottomGuide  = self.bottomLayoutGuide;
-//    NSDictionary *dic = NSDictionaryOfVariableBindings(_webView, topGuide, bottomGuide);
-//    NSArray  *constraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[to]" options:0 metrics:nil views:dic]
-    [self.currentWebView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view);
-        make.left.equalTo(self.view);
-        make.right.equalTo(self.view);
-        make.bottom.equalTo(self.view);
-    }];
-    
     NSDictionary *pDic = NSDictionaryOfVariableBindings(_progressView, topGuide);
     NSArray *pConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[topGuide][_progressView(==1.0)]" options:0 metrics:nil views:pDic];
     [self.progressView.superview addConstraints:pConstraints];

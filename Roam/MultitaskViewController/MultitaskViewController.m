@@ -31,6 +31,11 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
     [self setUpConstraints];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -53,8 +58,8 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     WebViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuse_ID forIndexPath:indexPath];
     
-    UIView *snapshotView = [self.mainViewController.webViews[indexPath.row] snapshotViewAfterScreenUpdates:YES];
-    [cell setDisplayView:snapshotView];
+    UIView *snapshot = [self.mainViewController.webViews[indexPath.row] snapshotViewAfterScreenUpdates:YES];
+    [cell setDisplayView:snapshot];
     cell.delegate = self;
     return cell;
 }
@@ -116,11 +121,13 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 }
 
 - (void)addItemAction {
-
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    [self.mainViewController displayNewWebView:NO];
 }
 
 - (void)doneItemAction {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    
 }
 
 

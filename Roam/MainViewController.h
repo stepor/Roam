@@ -13,10 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MainViewController : UIViewController
 
+@property (strong, nonatomic, readonly) NSArray<UIView *> *snapshotViews;
+
 - (WKWebView *)initializeWebView:(BOOL)isPrivate;
 
 - (NSArray<WKWebView *> *)webViews;
 - (NSArray<WKWebView *> *)privateWebViews;
+
+- (void)displayNewWebView:(BOOL)isPrivate;
 
 - (void)removeWebView:( WKWebView *)webView;
 - (void)removeWebViewAtIndex:(NSUInteger)index;

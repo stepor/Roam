@@ -24,7 +24,7 @@
     self =  [super initWithFrame:frame];
     if(self) {
         self.removeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        self.removeButton.backgroundColor = [UIColor colorWithRed:1.0 green:0.416 blue:0.416 alpha:0.8];
+        self.removeButton.backgroundColor = [UIColor colorWithRed:1.0 green:0.416 blue:0.416 alpha:0.5];
         [self.removeButton setTitle:@"移除" forState:UIControlStateNormal];
         [self.removeButton addTarget:self action:@selector(removeButtonAction:) forControlEvents:UIControlEventTouchUpInside];
         self.removeButton.frame = self.contentView.bounds;
