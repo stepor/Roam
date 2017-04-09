@@ -48,19 +48,13 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if(self.mainViewController) {
-        NSLog(@"webViews.count : %lu", self.mainViewController.webViews.count);
-        return self.mainViewController.webViews.count;
-    }
+
     return 0;
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     WebViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuse_ID forIndexPath:indexPath];
     
-    UIView *snapshot = [self.mainViewController.webViews[indexPath.row] snapshotViewAfterScreenUpdates:YES];
-    [cell setDisplayView:snapshot];
-    cell.delegate = self;
     return cell;
 }
 
@@ -122,7 +116,6 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 
 - (void)addItemAction {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-    [self.mainViewController displayNewWebView:NO];
 }
 
 - (void)doneItemAction {

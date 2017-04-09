@@ -11,7 +11,7 @@
 
 @interface HistoryViewController : UITableViewController
 
-@property (nonatomic, strong) WKWebView *currentWebView;
+@property (nonatomic, strong) WKWebView *webView;
 - (void)clearAllHistories;
 
 @end

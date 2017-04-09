@@ -7,11 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MainViewController.h"
+#import "WebViewController.h"
 
 @interface MultitaskViewController : UIViewController
 
-@property (strong, nonatomic) MainViewController *mainViewController;
+@property (strong, nonatomic) WebViewController *mainViewController;
 
 @end
 

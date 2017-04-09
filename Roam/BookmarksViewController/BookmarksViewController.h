@@ -11,6 +11,6 @@
 
 @interface BookmarksViewController : UITableViewController
 
-@property (nonatomic, strong) WKWebView *currentWebView;
+@property (nonatomic, strong) WKWebView *webView;
 
 @end

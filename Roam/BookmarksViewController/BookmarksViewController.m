@@ -61,9 +61,9 @@ static NSString *const reuseID = @"Bookmarkcell";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if(self.currentWebView) {
+    if(self.webView) {
         NSURL *url = [NSURL URLWithString:self.favoriteArray[indexPath.row].urlString];
-        [self.currentWebView loadRequest:[NSURLRequest requestWithURL:url]];
+        [self.webView loadRequest:[NSURLRequest requestWithURL:url]];
         [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     }
 }
