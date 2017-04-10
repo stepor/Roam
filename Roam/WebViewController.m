@@ -66,7 +66,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.navigationItem setHidesBackButton:YES];
-    [self initialization];
+    [self initializeBasicSettings];
     [self configureToolBar];
     [self configureNavigationItem];
     [self configureWebView];//webView
@@ -401,7 +401,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 
 #pragma mark - private methods
-- (void)initialization {
+- (void)initializeBasicSettings {
     self.navigationController.hidesBarsOnSwipe = [[NSUserDefaults standardUserDefaults] boolForKey:kIsFullscreen]; //全屏模式
     
     BOOL isNightMode = [[NSUserDefaults standardUserDefaults] boolForKey:kIsNightMode];
@@ -421,6 +421,8 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         typeof(weakSelf) strongSelf = weakSelf;
         make.edges.equalTo(strongSelf.view);
     }];
+    
+    NSLog(@"data source : %u", self.webView.configuration.websiteDataStore.isPersistent);
 }
 
 - (void)configureToolBar {
@@ -681,25 +683,25 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (WKWebView *)initializeWebView:(BOOL)isPrivate {
+    WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
+    configuration.allowsInlineMediaPlayback = YES;
+    configuration.allowsAirPlayForMediaPlayback = YES;
+    configuration.allowsPictureInPictureMediaPlayback = YES;
+    configuration.mediaPlaybackRequiresUserAction = NO;
+    configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
     
-    if(isPrivate) {
-        return nil;
-    } else {
-        WKWebViewConfiguration *configuration = [WKWebViewConfiguration new];
-        configuration.allowsInlineMediaPlayback = YES;
-        configuration.allowsAirPlayForMediaPlayback = YES;
-        configuration.allowsPictureInPictureMediaPlayback = YES;
-        configuration.mediaPlaybackRequiresUserAction = NO;
-        configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
-        
-        WKWebView *webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
-        webView.allowsBackForwardNavigationGestures = YES;
-        webView.UIDelegate = self;
-        webView.navigationDelegate = self;
-        [webView  loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
-        
-        return webView;
+    if(_isPrivate) {//无痕浏览
+        configuration.websiteDataStore = [WKWebsiteDataStore nonPersistentDataStore];
     }
+    
+    WKWebView *webView = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
+    webView.allowsBackForwardNavigationGestures = YES;
+    webView.UIDelegate = self;
+    webView.navigationDelegate = self;
+    [webView  loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://www.baidu.com/"]]];
+    
+    return webView;
+    
 }
 
 @end

@@ -12,15 +12,26 @@
 #import "WebViewCell.h"
 #import "WebViewManager.h"
 
+typedef NS_ENUM(NSUInteger, BrowsingMode) {
+    BrowsingModePrivate = 0,
+    BrowsingModeNonprivate
+};
 
 static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController";
+static BrowsingMode _browsingMode = BrowsingModeNonprivate;
 
 @interface MultitaskViewController ()<UICollectionViewDelegate, UICollectionViewDataSource, WebViewCellDelegate>
 
 @property (strong, nonatomic) UIToolbar *toolbar;
 @property (strong, nonatomic) UICollectionView *collectionView;
 
+//tool bar item
+@property (strong, nonatomic) UIBarButtonItem *privateBrowsingItem;
+@property (strong, nonatomic) UIBarButtonItem *doneItem;
+
 @end
+
+
 
 
 @implementation MultitaskViewController
@@ -58,12 +69,20 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [WebViewManager shareInstance].webViewControllers.count;
+    if(_browsingMode == BrowsingModePrivate) {
+        return [WebViewManager shareInstance].privateWebViewControllers.count;
+    } else {
+        return [WebViewManager shareInstance].webViewControllers.count;
+    }
 }
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     WebViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuse_ID forIndexPath:indexPath];
-    [cell setDisplayView:[WebViewManager shareInstance].webViewControllers[indexPath.row].snapshotView];
+    if(_browsingMode == BrowsingModePrivate) {
+        [cell setDisplayView:[WebViewManager shareInstance].privateWebViewControllers[indexPath.row].snapshotView];
+    } else {
+        [cell setDisplayView:[WebViewManager shareInstance].webViewControllers[indexPath.row].snapshotView];
+    }
     if(cell.delegate == nil) {
         cell.delegate = self;
     }
@@ -74,25 +93,40 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     UINavigationController *navi = (UINavigationController *)self.presentingViewController;
-    WebViewController *webViewVC = [WebViewManager shareInstance].webViewControllers[indexPath.row];
+    WebViewController *webViewVC = nil;
+    if(_browsingMode == BrowsingModePrivate) {
+        webViewVC = [WebViewManager shareInstance].privateWebViewControllers[indexPath.row];
+    } else {
+        webViewVC = [WebViewManager shareInstance].webViewControllers[indexPath.row];
+    }
     [navi setViewControllers:@[webViewVC]];
 }
 
 #pragma mark - <WebViewCellDelegate> 
 - (void)WebViewCellDidSelectRomove:(WebViewCell *)webViewCell {
     NSIndexPath *indexPath = [self.collectionView indexPathForCell:webViewCell];
-    [[WebViewManager shareInstance] deleteWebViewcontrollerAtIndex:indexPath.row];
+    if(_browsingMode == BrowsingModePrivate) {
+        [[WebViewManager shareInstance] deletePrivateWEbViewControllerAtIndex:indexPath.row];
+    } else {
+        [[WebViewManager shareInstance] deleteWebViewcontrollerAtIndex:indexPath.row];
+    }
     
     [self.collectionView performBatchUpdates:^{
         [self.collectionView deleteItemsAtIndexPaths:@[indexPath]];
     } completion:^(BOOL finished) {
         if(finished) {
             //如果所有的 web view controller 都被移出，则新建一个 并 dismiss 多任务窗口
-            if([WebViewManager shareInstance].webViewControllers.count < 1) {
+            if([WebViewManager shareInstance].webViewControllers.count < 1 && _browsingMode == BrowsingModeNonprivate) {
                 WebViewController *vc = [[WebViewManager shareInstance] produceWebViewController:NO];
                 UINavigationController *navi = (UINavigationController *)self.presentingViewController;
                 [navi setViewControllers:@[vc]];
                 [navi dismissViewControllerAnimated:YES completion:nil];
+            } else if(_browsingMode == BrowsingModePrivate) {
+                if([WebViewManager shareInstance].privateWebViewControllers.count < 1) {
+                    self.doneItem.enabled = NO;
+                } else {
+                    self.doneItem.enabled = YES;
+                }
             }
         }
     }];
@@ -116,15 +150,16 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
     self.toolbar.barTintColor = [UIColor blackColor];
     [self.view addSubview:self.toolbar];
     
-    UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@"关闭全部" style:UIBarButtonItemStylePlain target:self action:@selector(closeItemAction)];
+    NSString *title = (_browsingMode == BrowsingModePrivate? @"关闭无痕浏览" : @"开启无痕浏览");
+    self.privateBrowsingItem = [[UIBarButtonItem alloc] initWithTitle:title style:UIBarButtonItemStylePlain target:self action:@selector(privateBrowsingItemAction)];
     
     UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addItemAction)];
     
-    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStylePlain target:self action:@selector(doneItemAction)];
+    self.doneItem = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStylePlain target:self action:@selector(doneItemAction)];
     
     UIBarButtonItem *flexibleItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     
-    self.toolbar.items = @[closeItem, flexibleItem, addItem, flexibleItem, doneItem];
+    self.toolbar.items = @[self.privateBrowsingItem, flexibleItem, addItem, flexibleItem, self.doneItem];
 }
 
 
@@ -144,9 +179,26 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
     }];
 }
 
+
+#error 做到这里
 #pragma mark - bar button action
-- (void)closeItemAction {
+- (void)privateBrowsingItemAction {
+    _browsingMode = (_browsingMode == BrowsingModeNonprivate ? BrowsingModePrivate : BrowsingModeNonprivate);
+    if(_browsingMode == BrowsingModePrivate) {
+        self.privateBrowsingItem.title = @"关闭无痕浏览";
+        if([WebViewManager shareInstance].privateWebViewControllers.count < 1) {
+            self.doneItem.enabled = NO;
+        }
+        
+        
+    } else {
+        self.privateBrowsingItem.title = @"开启无痕浏览";
+        if(self.doneItem.enabled == NO) {
+            self.doneItem.enabled = YES;
+        }
     
+        
+    }
 }
 
 - (void)addItemAction {
@@ -158,7 +210,6 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 
 - (void)doneItemAction {
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
-    
 }
 
 @end
