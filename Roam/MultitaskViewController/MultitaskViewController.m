@@ -27,6 +27,7 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self initializeCollectionView];
     [self setUpToolBar];
     [self setUpConstraints];
@@ -34,14 +35,22 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     
+    //让 collection view 滚动到对应的 web view 的 cell
+    UINavigationController *navi = (UINavigationController *)self.presentingViewController;
+    NSUInteger row = [[WebViewManager shareInstance].webViewControllers indexOfObject:(WebViewController *)navi.topViewController];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+    [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically|UICollectionViewScrollPositionCenteredHorizontally animated:NO];
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
 
 #pragma mark - <UICollectionViewDataSource>
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -55,12 +64,39 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     WebViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:reuse_ID forIndexPath:indexPath];
     [cell setDisplayView:[WebViewManager shareInstance].webViewControllers[indexPath.row].snapshotView];
+    if(cell.delegate == nil) {
+        cell.delegate = self;
+    }
     return cell;
+}
+
+#pragma mark - <UICollectionViewDelegate>
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    UINavigationController *navi = (UINavigationController *)self.presentingViewController;
+    WebViewController *webViewVC = [WebViewManager shareInstance].webViewControllers[indexPath.row];
+    [navi setViewControllers:@[webViewVC]];
 }
 
 #pragma mark - <WebViewCellDelegate> 
 - (void)WebViewCellDidSelectRomove:(WebViewCell *)webViewCell {
-    NSLog(@"web view cell delegate!");
+    NSIndexPath *indexPath = [self.collectionView indexPathForCell:webViewCell];
+    [[WebViewManager shareInstance] deleteWebViewcontrollerAtIndex:indexPath.row];
+    
+    [self.collectionView performBatchUpdates:^{
+        [self.collectionView deleteItemsAtIndexPaths:@[indexPath]];
+    } completion:^(BOOL finished) {
+        if(finished) {
+            //如果所有的 web view controller 都被移出，则新建一个 并 dismiss 多任务窗口
+            if([WebViewManager shareInstance].webViewControllers.count < 1) {
+                WebViewController *vc = [[WebViewManager shareInstance] produceWebViewController:NO];
+                UINavigationController *navi = (UINavigationController *)self.presentingViewController;
+                [navi setViewControllers:@[vc]];
+                [navi dismissViewControllerAnimated:YES completion:nil];
+            }
+        }
+    }];
+    
 }
 
 #pragma mark - initialize
@@ -105,7 +141,6 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
         typeof(weakSelf) strongSelf = weakSelf;
         make.left.right.and.top.equalTo(strongSelf.collectionView.superview);
         make.bottom.equalTo(strongSelf.toolbar.mas_top);
-        
     }];
 }
 
@@ -125,7 +160,6 @@ static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     
 }
-
 
 @end
 

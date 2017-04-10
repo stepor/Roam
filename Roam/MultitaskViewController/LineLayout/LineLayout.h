@@ -96,4 +96,8 @@
 
 @interface LineLayout : UICollectionViewFlowLayout
 
+
++ (CGFloat)sideDistance; //cell 居中原大小距离 collectionView 两边的距离
++ (CGFloat)zoomFactor;
+
 @end

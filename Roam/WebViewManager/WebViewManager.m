@@ -62,4 +62,18 @@
     return [_privateWebViewConstrollers copy];
 }
 
+- (void)deleteWebViewController:(WebViewController *)webViewVC {
+    [_webViewControllers removeObject:webViewVC];
+}
+- (void)deleteWebViewcontrollerAtIndex:(NSUInteger)index {
+    [_webViewControllers removeObjectAtIndex:index];
+}
+
+- (void)deletePrivateWebViewController:(WebViewController *)webViewVC {
+    [_privateWebViewConstrollers removeObject:webViewVC];
+}
+- (void)deletePrivateWEbViewControllerAtIndex:(NSUInteger)index {
+    [_privateWebViewConstrollers removeObjectAtIndex:index];
+}
+
 @end

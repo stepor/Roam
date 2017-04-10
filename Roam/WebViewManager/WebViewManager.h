@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "WebViewController.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface WebViewManager : NSObject
 
 + (instancetype)shareInstance;
@@ -17,5 +19,12 @@
 - (NSArray<WebViewController *> *)webViewControllers;
 - (NSArray<WebViewController *> *)privateWebViewControllers;
 
+- (void)deleteWebViewController:(WebViewController *)webViewVC;
+- (void)deleteWebViewcontrollerAtIndex:(NSUInteger)index;
+
+- (void)deletePrivateWebViewController:(WebViewController *)webViewVC;
+- (void)deletePrivateWEbViewControllerAtIndex:(NSUInteger)index;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -6,6 +6,7 @@
 //  Copyright © 2017年 黄文鸿. All rights reserved.
 //
 
+#import "WHScreen.h"
 #import "WebViewController.h"
 #import <Masonry/Masonry.h>
 #import <KVOController/KVOController.h>
@@ -18,6 +19,7 @@
 #import "BookmarksViewController.h"
 #import "HIstoryViewController.h"
 #import "MultitaskViewController.h"
+#import "LineLayout.h"
 
 static NSString *const kIsNightMode = @"isNightMode";
 
@@ -265,9 +267,25 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 
 - (void)multiTaskButtonAction:(UIButton *)button {
     MultitaskViewController *multitaskVC = [[MultitaskViewController alloc] init];
-    multitaskVC.mainViewController = self;
-    multitaskVC.view.backgroundColor = [UIColor redColor];
-    [self presentViewController:multitaskVC animated:YES completion:nil];
+    
+    
+    CGFloat targetWidth = ([WHScreen width] - 2.0 * [LineLayout sideDistance]) * ([LineLayout zoomFactor] + 1);
+    CGFloat targetHeight = targetWidth / [WHScreen whRatio];
+    CGFloat targetX = ([WHScreen width] - targetWidth) / 2.0;
+    CGFloat targetY = ([WHScreen height] - 44.0 - targetHeight) / 2.0;
+    CGRect targetFrame = CGRectMake(targetX, targetY, targetWidth, targetHeight);
+    
+    UIView *view = [self.navigationController.view snapshotViewAfterScreenUpdates:YES];
+    view.frame = [WHScreen bounds];
+    [[UIApplication sharedApplication].keyWindow addSubview:view];
+    [UIView animateWithDuration:0.3 animations:^{
+        view.frame = targetFrame;
+        view.alpha = 0.5;
+    } completion:^(BOOL finished) {
+        [view removeFromSuperview];
+    }];
+    
+    [self presentViewController:multitaskVC animated:NO completion:nil];
 }
 
 - (void)rightItemAction {

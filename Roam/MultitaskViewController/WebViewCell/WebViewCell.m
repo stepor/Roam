@@ -35,6 +35,7 @@
                     make.left.right.and.bottom.equalTo(strongSelf.removeButton.superview);
                     make.height.equalTo(@44.0);
                 }];
+        self.contentView.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }
@@ -59,8 +60,6 @@
     if(self.delegate && [self.delegate respondsToSelector:@selector(WebViewCellDidSelectRomove:)]) {
         [self.delegate WebViewCellDidSelectRomove:self];
     }
-    
-    NSLog(@"Cell remove button did select");
 }
 
 @end

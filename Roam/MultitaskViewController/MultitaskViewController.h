@@ -11,7 +11,6 @@
 
 @interface MultitaskViewController : UIViewController
 
-@property (strong, nonatomic) WebViewController *mainViewController;
 
 @end
 

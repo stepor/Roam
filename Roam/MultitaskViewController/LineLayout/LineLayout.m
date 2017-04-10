@@ -106,7 +106,7 @@
     self = [super init];
     if (self) {
         
-        CGFloat sideDistance = 70.0;
+        CGFloat sideDistance = [LineLayout sideDistance];
         CGFloat screenWidth = CGRectGetWidth([UIScreen mainScreen].bounds);
         CGFloat screenHeight = CGRectGetHeight([UIScreen mainScreen].bounds);
         CGFloat whRatio =screenWidth / screenHeight;
@@ -116,7 +116,7 @@
         
         self.itemSize = CGSizeMake(cellWidth, cellHeight);
         self.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-        //  确定了缩进，此处为上方、下方各缩进200
+        //缩进
         CGFloat top = (collectionViewHeight - cellHeight) / 2.0;
         CGFloat bottom = top;
         self.sectionInset = UIEdgeInsetsMake(top, sideDistance, bottom, sideDistance);
@@ -133,27 +133,31 @@
     return YES;
 }
 
-//  初始的layout外观将由该方法返回的UICollctionViewLayoutAttributes来决定
-//-(NSArray*)layoutAttributesForElementsInRect:(CGRect)rect
-//{
-//    NSArray* array = [super layoutAttributesForElementsInRect:rect];
-//    CGRect visibleRect;
-//    visibleRect.origin = self.collectionView.contentOffset;
-//    visibleRect.size = self.collectionView.bounds.size;
-//    
-//    for (UICollectionViewLayoutAttributes* attributes in array) {
-//        if (CGRectIntersectsRect(attributes.frame, rect)) {
-//            CGFloat distance = CGRectGetMidX(visibleRect) - attributes.center.x;
-//            CGFloat normalizedDistance = distance / ACTIVE_DISTANCE;
-//            if (ABS(distance) < ACTIVE_DISTANCE) {
-//                CGFloat zoom = 1 + ZOOM_FACTOR*(1 - ABS(normalizedDistance));
-//                attributes.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);
-//                attributes.zIndex = 1;
-//            }
-//        }
-//    }
-//    return array;
-//}
+ // 初始的layout外观将由该方法返回的UICollctionViewLayoutAttributes来决定
+-(NSArray*)layoutAttributesForElementsInRect:(CGRect)rect
+{
+    NSArray* array = [super layoutAttributesForElementsInRect:rect];
+    CGRect visibleRect;
+    visibleRect.origin = self.collectionView.contentOffset;
+    visibleRect.size = self.collectionView.bounds.size;
+    
+    NSMutableArray *attriArr = [NSMutableArray array]; //要每个 attributes 复制之后再修改，否则会出现：This is likely occurring because the flow layout subclass LineLayout is modifying attributes returned by UICollectionViewFlowLayout without copying them
+    
+    for (UICollectionViewLayoutAttributes* aAttributes in array) {
+        UICollectionViewLayoutAttributes *attributes = [aAttributes copy];
+        [attriArr addObject:attributes];
+        if (CGRectIntersectsRect(attributes.frame, rect)) {
+            CGFloat distance = CGRectGetMidX(visibleRect) - attributes.center.x;
+            CGFloat normalizedDistance = distance / ACTIVE_DISTANCE;
+            if (ABS(distance) < ACTIVE_DISTANCE) {
+                CGFloat zoom = 1 + ZOOM_FACTOR*(1 - ABS(normalizedDistance));
+                attributes.transform3D = CATransform3DMakeScale(zoom, zoom, 1.0);
+                attributes.zIndex = 1;
+            }
+        }
+    }
+    return [attriArr copy];
+}
 
 //  自动对齐到网格
 - (CGPoint)targetContentOffsetForProposedContentOffset:(CGPoint)proposedContentOffset withScrollingVelocity:(CGPoint)velocity
@@ -173,6 +177,14 @@
         }
     }    
     return CGPointMake(proposedContentOffset.x + offsetAdjustment, proposedContentOffset.y);
+}
+
++ (CGFloat)sideDistance {
+    return 70.0;
+}
+
++ (CGFloat)zoomFactor {
+    return ZOOM_FACTOR;
 }
 
 @end
