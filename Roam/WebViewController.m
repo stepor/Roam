@@ -78,6 +78,11 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     self.forwardButton.enabled = NO;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self setPrivateBrowsingMode:_isPrivate];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     _snapshotView = [self.navigationController.view snapshotViewAfterScreenUpdates:YES];
@@ -266,8 +271,8 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 }
 
 - (void)multiTaskButtonAction:(UIButton *)button {
-    MultitaskViewController *multitaskVC = [[MultitaskViewController alloc] init];
-    
+    BrowsingMode mode = _isPrivate ? BrowsingModePrivate : BrowsingModeNonprivate;
+    MultitaskViewController *multitaskVC = [[MultitaskViewController alloc] initWithBrowsingMode:mode];
     
     CGFloat targetWidth = ([WHScreen width] - 2.0 * [LineLayout sideDistance]) * ([LineLayout zoomFactor] + 1);
     CGFloat targetHeight = targetWidth / [WHScreen whRatio];
@@ -395,15 +400,12 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     [[NSUserDefaults standardUserDefaults] setBool:isNightMode forKey:kIsNightMode];
 }
 
-#pragma mark - public methods
-
-
-
-
 #pragma mark - private methods
 - (void)initializeBasicSettings {
-    self.navigationController.hidesBarsOnSwipe = [[NSUserDefaults standardUserDefaults] boolForKey:kIsFullscreen]; //全屏模式
+    //全屏模式
+    self.navigationController.hidesBarsOnSwipe = [[NSUserDefaults standardUserDefaults] boolForKey:kIsFullscreen];
     
+    //夜间模式
     BOOL isNightMode = [[NSUserDefaults standardUserDefaults] boolForKey:kIsNightMode];
     if(isNightMode) {
         self.nightModeView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -702,6 +704,18 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     
     return webView;
     
+}
+
+- (void)setPrivateBrowsingMode:(BOOL)isPrivate {
+    if(isPrivate) {
+        UIColor *midNightBlue = [UIColor colorWithRed:0.0 green:0.0 blue:0.1 alpha:1.0];
+        self.navigationController.navigationBar.barTintColor = midNightBlue;
+        self.navigationController.toolbar.barTintColor = midNightBlue;
+    } else {
+        UIColor *white = [UIColor whiteColor];
+        self.navigationController.navigationBar.barTintColor = white;
+        self.navigationController.toolbar.barTintColor = white;
+    }
 }
 
 @end

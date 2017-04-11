@@ -12,11 +12,6 @@
 #import "WebViewCell.h"
 #import "WebViewManager.h"
 
-typedef NS_ENUM(NSUInteger, BrowsingMode) {
-    BrowsingModePrivate = 0,
-    BrowsingModeNonprivate
-};
-
 static NSString *const reuse_ID = @"UICollectionViewCell_MultitaskViewController";
 static BrowsingMode _browsingMode = BrowsingModeNonprivate;
 
@@ -36,6 +31,16 @@ static BrowsingMode _browsingMode = BrowsingModeNonprivate;
 
 @implementation MultitaskViewController
 
+#pragma mark -  Initialization
+- (instancetype)initWithBrowsingMode:(BrowsingMode)browsingMode {
+    self = [super init];
+    if(self) {
+        _browsingMode = browsingMode;
+    }
+    return self;
+}
+
+#pragma mark - Life cycle
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -44,16 +49,19 @@ static BrowsingMode _browsingMode = BrowsingModeNonprivate;
     [self setUpConstraints];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
     //让 collection view 滚动到对应的 web view 的 cell
     UINavigationController *navi = (UINavigationController *)self.presentingViewController;
-    NSUInteger row = [[WebViewManager shareInstance].webViewControllers indexOfObject:(WebViewController *)navi.topViewController];
+    NSArray *array = nil;
+    if(_browsingMode == BrowsingModePrivate) {
+        array = [WebViewManager shareInstance].privateWebViewControllers;
+    } else {
+        array = [WebViewManager shareInstance].webViewControllers;
+    }
+    NSUInteger row = [array indexOfObject:navi.topViewController];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
     [self.collectionView scrollToItemAtIndexPath:indexPath atScrollPosition:UICollectionViewScrollPositionCenteredVertically|UICollectionViewScrollPositionCenteredHorizontally animated:NO];
 }
@@ -180,7 +188,6 @@ static BrowsingMode _browsingMode = BrowsingModeNonprivate;
 }
 
 
-#error 做到这里
 #pragma mark - bar button action
 - (void)privateBrowsingItemAction {
     _browsingMode = (_browsingMode == BrowsingModeNonprivate ? BrowsingModePrivate : BrowsingModeNonprivate);
@@ -190,22 +197,28 @@ static BrowsingMode _browsingMode = BrowsingModeNonprivate;
             self.doneItem.enabled = NO;
         }
         
-        
     } else {
         self.privateBrowsingItem.title = @"开启无痕浏览";
         if(self.doneItem.enabled == NO) {
             self.doneItem.enabled = YES;
         }
-    
-        
     }
+    [self.collectionView performBatchUpdates:^{
+        [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:0]];
+        [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:0]];
+    } completion:nil];
 }
 
 - (void)addItemAction {
-    WebViewController *webViewVC = [[WebViewManager shareInstance] produceWebViewController:NO];
+    WebViewController *webViewVC = nil;
+    if(_browsingMode == BrowsingModePrivate) {
+        webViewVC = [[WebViewManager shareInstance] produceWebViewController:YES];
+    } else {
+        webViewVC = [[WebViewManager shareInstance] produceWebViewController:NO];
+    }
     UINavigationController *navi = (UINavigationController *)self.presentingViewController;
-    [navi pushViewController:webViewVC animated:NO];
-    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    [navi setViewControllers:@[webViewVC]];
+    [navi dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)doneItemAction {

@@ -9,10 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "WebViewController.h"
 
-
+typedef NS_ENUM(NSUInteger, BrowsingMode) {
+    BrowsingModePrivate = 0,
+    BrowsingModeNonprivate
+};
 
 @interface MultitaskViewController : UIViewController
 
+- (instancetype)initWithBrowsingMode:(BrowsingMode)browsingMode;
 
 @end
 
