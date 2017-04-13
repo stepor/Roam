@@ -31,7 +31,7 @@ static NSString *const reuseID_itemCell = @"itemCell";
     CGRect frame = CGRectMake(CGRectGetMinX(originalFrame) + inserts.left, CGRectGetMinY(originalFrame) + inserts.top, CGRectGetWidth(originalFrame) - inserts.left - inserts.right, CGRectGetHeight(originalFrame) - inserts.top - inserts.bottom);
     WHPopView *view  = [[WHPopView alloc] initWithFrame:frame];
     [superView addSubview:view];
-    view.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.3];
+    view.backgroundColor = [UIColor colorWithWhite:0.2 alpha:0.15];
     view.clipsToBounds = YES;
     
     // images , title  , block
@@ -99,15 +99,22 @@ static NSString *const reuseID_itemCell = @"itemCell";
     return cell;
 }
 
-- (void)hide{
-    [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        self.collectionView.transform = CGAffineTransformIdentity;
-    } completion:^(BOOL finished) {
-        if(finished) {
-            self.hideBblock();
-            [self removeFromSuperview];
-        }
-    }];
+- (void)hideAnimate:(BOOL)animate {
+    if(animate) {
+        [UIView animateWithDuration:0.2 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+            self.collectionView.transform = CGAffineTransformIdentity;
+        } completion:^(BOOL finished) {
+            if(finished) {
+                self.hideBblock();
+                self.hideBblock = nil;
+                [self removeFromSuperview];
+            }
+        }];
+    } else {
+        self.hideBblock();
+        self.hideBblock = nil;
+        [self removeFromSuperview];
+    }
 }
 
 
@@ -121,7 +128,7 @@ static NSString *const reuseID_itemCell = @"itemCell";
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    [self hide];
+    [self hideAnimate:YES];
 }
 
 #pragma mark - Public methods

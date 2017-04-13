@@ -21,7 +21,8 @@
 #pragma mark - Life cycle
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+   // self.navigationController.navigationBar.barTintColor = [UIColor whiteColor];
+   // self.navigationController.navigationBar.tintColor = [UIColor blueColor];
     
 }
 

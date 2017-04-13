@@ -20,6 +20,9 @@
 #import "HIstoryViewController.h"
 #import "MultitaskViewController.h"
 #import "LineLayout.h"
+#import "WebViewManager.h"
+#import "SettingsViewController.h"
+#import "NightModeView.h"
 
 static NSString *const kIsNightMode = @"isNightMode";
 
@@ -46,7 +49,7 @@ typedef NS_ENUM(NSInteger, TagTextField) {
 
 @property (strong, nonatomic) WHPopView *popView;
 
-@property (strong, nonatomic) UIView *nightModeView;
+
 @end
 
 @implementation WebViewController
@@ -81,6 +84,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self setPrivateBrowsingMode:_isPrivate];
+    [self updateMultitaskButtonSettings];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -135,9 +139,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
 #pragma mark - <WKUIDelegate>
 - (nullable WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
     
-    
-    
-    NSLog(@"%s", __func__);
+    NSLog(@"--------%s", __func__);
     return nil;
 }
 
@@ -231,14 +233,16 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
             show = NO;
             strongSelf.popView= nil;
         } selectedBlock:^(NSInteger index) {
-            NSLog(@"seleted item at : %ld", index);
+
             typeof(weakSelf) strongSelf = weakSelf;
+            BOOL needDelay = NO;
             switch (index) {
                 case 0:
                     [strongSelf selectAddingBookmark];
                     break;
                 case 1:
                     [strongSelf selectBookmarksAndHistory];
+                    needDelay = YES;
                     break;
                 case 2:
                     [strongSelf selectRefresh];
@@ -247,7 +251,8 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
                     [strongSelf selectShare];
                     break;
                 case 4:
-                    [UIApplication sharedApplication].keyWindow.tintAdjustmentMode = UIViewTintAdjustmentModeDimmed;
+                    [strongSelf selectSettings];
+                    needDelay = YES;
                     break;
                 case 5:
                     [strongSelf selectFullscreen];
@@ -258,11 +263,19 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
                 default:
                     break;
             }
-            [strongSelf.popView hide];
+            
+            if(needDelay) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [strongSelf.popView hideAnimate:NO];
+                });
+            } else {
+                [strongSelf.popView hideAnimate:YES];
+            }
+            
         
         }];
     } else {
-        [self.popView hide];
+        [self.popView hideAnimate:YES];
     }
 }
 
@@ -322,6 +335,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
                 hud.mode = MBProgressHUDModeText;
                 hud.minShowTime = 2.0;
                 hud.label.text = [NSString stringWithFormat:@"已存在标签栏中，其标题为\"%@\"", info.title];
+                hud.label.numberOfLines = 0;
                 dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2);
                 dispatch_after(delayTime, dispatch_get_main_queue(), ^{
                     [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -388,16 +402,31 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     BOOL isNightMode = ![[NSUserDefaults standardUserDefaults] boolForKey:kIsNightMode];
     
     if(isNightMode) {
-        self.nightModeView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        self.nightModeView.backgroundColor = [UIColor colorWithRed:0.23 green:0.23 blue:0.23 alpha:0.2];
-        self.nightModeView.userInteractionEnabled = NO;
-        [[UIApplication sharedApplication].keyWindow addSubview:self.nightModeView];
+        [NightModeView show];
     } else {
-        [self.nightModeView removeFromSuperview];
-        self.nightModeView = nil;
+        [NightModeView hide];
     }
     
     [[NSUserDefaults standardUserDefaults] setBool:isNightMode forKey:kIsNightMode];
+}
+
+- (void)selectSettings {
+    //SettingsViewController *settingVC = [[SettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    SettingsViewController *settingVC = [storyboard instantiateViewControllerWithIdentifier:@"SettingsViewController"];
+    
+    UINavigationController *navi = [[UINavigationController alloc] initWithRootViewController:settingVC];
+    [self presentViewController:navi animated:YES completion:nil];
+    
+}
+
+#pragma mark - Override
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    if(_isPrivate) {
+        return UIStatusBarStyleLightContent;
+    } else {
+        return UIStatusBarStyleDefault;
+    }
 }
 
 #pragma mark - private methods
@@ -408,10 +437,7 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     //夜间模式
     BOOL isNightMode = [[NSUserDefaults standardUserDefaults] boolForKey:kIsNightMode];
     if(isNightMode) {
-        self.nightModeView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        self.nightModeView.backgroundColor = [UIColor colorWithRed:0.23 green:0.23 blue:0.23 alpha:0.2];
-        self.nightModeView.userInteractionEnabled = NO;
-        [[UIApplication sharedApplication].keyWindow addSubview:self.nightModeView];
+        [NightModeView show];
     }
 }
 
@@ -465,22 +491,25 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     [self.homeButton addTarget:self action:@selector(homeButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *homeItem = [[UIBarButtonItem alloc] initWithCustomView:self.homeButton];
     
+    
     self.multiTaskButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.multiTaskButton.frame = buttonFrame;
-    [self.multiTaskButton setImage:[UIImage imageNamed:@"multiTask"] forState:UIControlStateNormal];
+    UIColor *color = [UIColor colorWithRed:0.26 green:0.26 blue:0.26 alpha:1.0];
+    self.multiTaskButton.titleLabel.layer.borderWidth = 1.0;
+    self.multiTaskButton.titleLabel.layer.borderColor = color.CGColor;
+    [self.multiTaskButton setTitle:@" 1 " forState:UIControlStateNormal];
+    self.multiTaskButton.titleLabel.font = [UIFont systemFontOfSize:16.0];
+    [self.multiTaskButton setTitleColor:color forState:UIControlStateNormal];
     self.multiTaskButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
     [self.multiTaskButton addTarget:self action:@selector(multiTaskButtonAction:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *multiTaskItem = [[UIBarButtonItem alloc] initWithCustomView:self.multiTaskButton];
     
     UIBarButtonItem *flexibleItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:NULL];
     
-//    NSArray *items = @[backItem, forwardItem, menuItem, homeItem, multiTaskItem];
-//    for(UIBarButtonItem *item in items) {
-//        item.width = width;
-//        
-//    }
     
-    self.toolbarItems = @[backItem, flexibleItem, forwardItem, flexibleItem, menuItem, flexibleItem, homeItem, flexibleItem, multiTaskItem];
+    NSArray *arr0 = @[flexibleItem ,backItem, flexibleItem, forwardItem, flexibleItem, menuItem, flexibleItem, homeItem, flexibleItem, multiTaskItem, flexibleItem];
+//    NSArray *arr1 = @[backItem, forwardItem, menuItem, homeItem, multiTaskItem];
+    self.toolbarItems = arr0;
     
 }
 
@@ -561,12 +590,15 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
     
     // observe web view title
     [self.KVOController observe:self.webView keyPath:@"title" options:NSKeyValueObservingOptionNew block:^(id  _Nullable observer, id  _Nonnull object, NSDictionary<NSString *,id> * _Nonnull change) {
+        
         typeof(weakSelf) strongSelf = weakSelf;
         strongSelf.searchTextField.text = change[NSKeyValueChangeNewKey];
         
-        //检查当前页面是否应该加入历史记录
-        if(self.webView.title.length > 2) {
-            [strongSelf addCurrentWebViewToHistory];
+        if(_isPrivate == NO) {
+            //检查当前页面是否应该加入历史记录
+            if(self.webView.title.length > 2) {
+                [strongSelf addCurrentWebViewToHistory];
+            }
         }
     }];
 }
@@ -711,10 +743,26 @@ static NSString *const prefixSearchString = @"https://m.baidu.com/s?from=1011851
         UIColor *midNightBlue = [UIColor colorWithRed:0.0 green:0.0 blue:0.1 alpha:1.0];
         self.navigationController.navigationBar.barTintColor = midNightBlue;
         self.navigationController.toolbar.barTintColor = midNightBlue;
+        
     } else {
         UIColor *white = [UIColor whiteColor];
         self.navigationController.navigationBar.barTintColor = white;
         self.navigationController.toolbar.barTintColor = white;
+    }
+}
+
+- (void)updateMultitaskButtonSettings {
+    NSInteger count = _isPrivate ? [WebViewManager shareInstance].privateWebViewControllers.count : [WebViewManager shareInstance].webViewControllers.count;
+    [self.multiTaskButton setTitle:[NSString stringWithFormat:@" %ld ", count] forState:UIControlStateNormal];
+    
+    if(_isPrivate) {
+        UIColor *privateColor = [UIColor colorWithWhite:0.5 alpha:1.0];
+        self.multiTaskButton.titleLabel.layer.borderColor = privateColor.CGColor;
+        [self.multiTaskButton setTitleColor:privateColor forState:UIControlStateNormal];
+    } else {
+        UIColor *nonprivateColor = [UIColor colorWithRed:0.26 green:0.26 blue:0.26 alpha:1.0];
+        self.multiTaskButton.titleLabel.layer.borderColor = nonprivateColor.CGColor;
+        [self.multiTaskButton setTitleColor:nonprivateColor forState:UIControlStateNormal];
     }
 }
 

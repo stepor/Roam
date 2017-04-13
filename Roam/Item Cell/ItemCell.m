@@ -7,13 +7,17 @@
 //
 
 #import "ItemCell.h"
+#import "WHScreen.h"
 
 @implementation ItemCell
 
 - (void)awakeFromNib {
     [super awakeFromNib];
-    CGFloat fontSize = 17.0;
-    if(CGRectGetHeight([UIScreen mainScreen].bounds) == 568.0) {
+    CGFloat fontSize = 14.0;
+    CGFloat screenWidth = [WHScreen width];
+    if(screenWidth == 568.0) {
+        fontSize = 11.0;
+    } else if (screenWidth == 667.0) {
         fontSize = 12.0;
     }
     self.titleLabel.font = [UIFont systemFontOfSize:fontSize];

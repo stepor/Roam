@@ -10,6 +10,9 @@
 		79C55A619D6768BB869EE101 /* Pods_Roam.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0483571199241373B49CCFBA /* Pods_Roam.framework */; };
 		D78FC30F1E9A201900D5EF2B /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D78FC30E1E9A201900D5EF2B /* RootViewController.m */; };
 		D78FC3131E9A776600D5EF2B /* WHScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = D78FC3121E9A776600D5EF2B /* WHScreen.m */; };
+		D78FC3171E9C825300D5EF2B /* NavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = D78FC3161E9C825300D5EF2B /* NavigationController.m */; };
+		D78FC3231E9E0EA000D5EF2B /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D78FC3211E9E0EA000D5EF2B /* SettingsViewController.m */; };
+		D78FC3281E9E26D600D5EF2B /* NightModeView.m in Sources */ = {isa = PBXBuildFile; fileRef = D78FC3271E9E26D600D5EF2B /* NightModeView.m */; };
 		D7CA2AB51E690A44003B138C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2AB41E690A44003B138C /* main.m */; };
 		D7CA2AB81E690A44003B138C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2AB71E690A44003B138C /* AppDelegate.m */; };
 		D7CA2ABB1E690A44003B138C /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D7CA2ABA1E690A44003B138C /* WebViewController.m */; };
@@ -60,6 +63,12 @@
 		D78FC30E1E9A201900D5EF2B /* RootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RootViewController.m; path = RootViewController/RootViewController.m; sourceTree = "<group>"; };
 		D78FC3111E9A776600D5EF2B /* WHScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WHScreen.h; path = WHScreen/WHScreen.h; sourceTree = "<group>"; };
 		D78FC3121E9A776600D5EF2B /* WHScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WHScreen.m; path = WHScreen/WHScreen.m; sourceTree = "<group>"; };
+		D78FC3151E9C825300D5EF2B /* NavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavigationController.h; path = NavigationController/NavigationController.h; sourceTree = "<group>"; };
+		D78FC3161E9C825300D5EF2B /* NavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavigationController.m; path = NavigationController/NavigationController.m; sourceTree = "<group>"; };
+		D78FC3201E9E0EA000D5EF2B /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SettingsViewController.h; path = SettingsViewController/SettingsViewController.h; sourceTree = "<group>"; };
+		D78FC3211E9E0EA000D5EF2B /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingsViewController.m; path = SettingsViewController/SettingsViewController.m; sourceTree = "<group>"; };
+		D78FC3261E9E26D600D5EF2B /* NightModeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NightModeView.h; path = NightModeView/NightModeView.h; sourceTree = "<group>"; };
+		D78FC3271E9E26D600D5EF2B /* NightModeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NightModeView.m; path = NightModeView/NightModeView.m; sourceTree = "<group>"; };
 		D7CA2AB01E690A44003B138C /* Roam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Roam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CA2AB41E690A44003B138C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D7CA2AB61E690A44003B138C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -168,6 +177,33 @@
 			name = WHScreen;
 			sourceTree = "<group>";
 		};
+		D78FC3141E9C822500D5EF2B /* NaivgationController */ = {
+			isa = PBXGroup;
+			children = (
+				D78FC3151E9C825300D5EF2B /* NavigationController.h */,
+				D78FC3161E9C825300D5EF2B /* NavigationController.m */,
+			);
+			name = NaivgationController;
+			sourceTree = "<group>";
+		};
+		D78FC3181E9CCAB100D5EF2B /* SettingsViewController */ = {
+			isa = PBXGroup;
+			children = (
+				D78FC3201E9E0EA000D5EF2B /* SettingsViewController.h */,
+				D78FC3211E9E0EA000D5EF2B /* SettingsViewController.m */,
+			);
+			name = SettingsViewController;
+			sourceTree = "<group>";
+		};
+		D78FC3251E9E26AA00D5EF2B /* NightModeView */ = {
+			isa = PBXGroup;
+			children = (
+				D78FC3261E9E26D600D5EF2B /* NightModeView.h */,
+				D78FC3271E9E26D600D5EF2B /* NightModeView.m */,
+			);
+			name = NightModeView;
+			sourceTree = "<group>";
+		};
 		D7CA2AA71E690A44003B138C = {
 			isa = PBXGroup;
 			children = (
@@ -193,7 +229,10 @@
 		D7CA2AB21E690A44003B138C /* Roam */ = {
 			isa = PBXGroup;
 			children = (
+				D78FC3251E9E26AA00D5EF2B /* NightModeView */,
+				D78FC3181E9CCAB100D5EF2B /* SettingsViewController */,
 				D78FC3101E9A773800D5EF2B /* WHScreen */,
+				D78FC3141E9C822500D5EF2B /* NaivgationController */,
 				D78FC3091E9A1FE700D5EF2B /* RootViewController */,
 				D7F0656F1E9A11340050B857 /* WebViewsManager */,
 				D7F0655C1E971D210050B857 /* MultitaskViewController */,
@@ -544,10 +583,12 @@
 			files = (
 				D7F0654C1E7CD9110050B857 /* SegmentViewController.m in Sources */,
 				D7F064F11E716F4D0050B857 /* ItemCell.m in Sources */,
+				D78FC3171E9C825300D5EF2B /* NavigationController.m in Sources */,
 				D7F065531E8163030050B857 /* BookmarksViewController.m in Sources */,
 				D7CA2ABB1E690A44003B138C /* WebViewController.m in Sources */,
 				D7F0655F1E971D6C0050B857 /* MultitaskViewController.m in Sources */,
 				D7CA2AB81E690A44003B138C /* AppDelegate.m in Sources */,
+				D78FC3231E9E0EA000D5EF2B /* SettingsViewController.m in Sources */,
 				D7F065481E7A8C1E0050B857 /* Model.xcdatamodeld in Sources */,
 				D7F065631E971DB70050B857 /* LineLayout.m in Sources */,
 				D7F0653B1E7792C90050B857 /* WHDialogViewController.m in Sources */,
@@ -555,6 +596,7 @@
 				D78FC3131E9A776600D5EF2B /* WHScreen.m in Sources */,
 				D7F0655B1E83B64E0050B857 /* HistoryViewController.m in Sources */,
 				D7CA2AB51E690A44003B138C /* main.m in Sources */,
+				D78FC3281E9E26D600D5EF2B /* NightModeView.m in Sources */,
 				D78FC30F1E9A201900D5EF2B /* RootViewController.m in Sources */,
 				D7F064EC1E7146BC0050B857 /* WHPopView.m in Sources */,
 				D7F065571E8166C70050B857 /* BookmarkCell.m in Sources */,

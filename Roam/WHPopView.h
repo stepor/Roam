@@ -18,5 +18,5 @@ static NSString *const kIsFullscreen = @"isFullScreen";
 - (void)updateTitle:(NSString *)title atIndex:(NSInteger)index;
 - (void)updateImage:(NSString *)imageName atIndex:(NSInteger)index;
 
-- (void)hide;
+- (void)hideAnimate:(BOOL)animate;
 @end
